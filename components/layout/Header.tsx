@@ -1,13 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { Search, Menu, Sparkles, BookOpen, Layers, Keyboard } from "lucide-react";
+import { Search, Menu, X, Sparkles, BookOpen, Layers, Keyboard } from "lucide-react";
 import { useStore } from "@/hooks/useStore";
 import { Button } from "@/components/ui/Button";
 
 export const Header = () => {
-  const { openCommandPalette, toggleSidebar } = useStore();
+  const { openCommandPalette } = useStore();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md">
@@ -17,10 +26,10 @@ export const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={toggleSidebar}
+            onClick={toggleMobileMenu}
             className="md:hidden text-zinc-400 hover:text-zinc-200"
           >
-            <Menu className="h-5 w-5" />
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
 
           <Link href="/" className="flex items-center gap-2 group select-none">
@@ -50,7 +59,10 @@ export const Header = () => {
         {/* Navigation Items */}
         <nav className="flex items-center gap-1 sm:gap-2">
           <button
-            onClick={openCommandPalette}
+            onClick={() => {
+              closeMobileMenu();
+              openCommandPalette();
+            }}
             className="p-2 text-zinc-400 hover:text-zinc-200 md:hidden transition-all duration-200"
           >
             <Search className="h-5 w-5" />
@@ -79,6 +91,42 @@ export const Header = () => {
           </Link>
         </nav>
       </div>
+
+      {/* Mobile Menu Dropdown Panel */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-zinc-900 bg-zinc-950/95 backdrop-blur-lg px-4 py-4 space-y-3 shadow-2xl">
+          <button
+            onClick={() => {
+              closeMobileMenu();
+              openCommandPalette();
+            }}
+            className="flex items-center w-full bg-zinc-900/60 border border-zinc-850 rounded-lg h-11 px-3.5 text-sm text-zinc-400 hover:text-zinc-200 transition-all duration-200"
+          >
+            <Search className="h-4 w-4 text-zinc-500 mr-2.5 shrink-0" />
+            <span className="text-left flex-1">Search 67+ tools...</span>
+          </button>
+          <div className="grid grid-cols-1 gap-1">
+            <Link href="/tools" onClick={closeMobileMenu}>
+              <span className="flex items-center gap-3 px-3.5 py-3 rounded-lg text-sm font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900/50 transition-all duration-200">
+                <Layers className="h-4.5 w-4.5 text-violet-400" />
+                <span>Categories</span>
+              </span>
+            </Link>
+            <Link href="/blog" onClick={closeMobileMenu}>
+              <span className="flex items-center gap-3 px-3.5 py-3 rounded-lg text-sm font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900/50 transition-all duration-200">
+                <BookOpen className="h-4.5 w-4.5 text-violet-400" />
+                <span>Blog</span>
+              </span>
+            </Link>
+            <Link href="/tools/productivity-tools/to-do-list" onClick={closeMobileMenu}>
+              <span className="flex items-center gap-3 px-3.5 py-3 rounded-lg text-sm font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900/50 transition-all duration-200">
+                <Sparkles className="h-4.5 w-4.5 text-violet-400" />
+                <span>My Workspace</span>
+              </span>
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

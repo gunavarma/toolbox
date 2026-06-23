@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
-import { Sidebar } from "@/components/layout/Sidebar";
 import { Footer } from "@/components/layout/Footer";
 import { CommandPalette } from "@/components/layout/CommandPalette";
 
@@ -79,9 +78,6 @@ export default function RootLayout({
 
         {/* Layout Shell */}
         <div className="flex flex-1 relative">
-          {/* Collapsible Left Sidebar */}
-          <Sidebar />
-
           {/* Main Content Area */}
           <main className="flex-1 flex flex-col w-full min-w-0">
             <div className="flex-1">

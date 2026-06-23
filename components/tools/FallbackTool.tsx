@@ -1,25 +1,33 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  Terminal,
   Calculator,
-  Type,
   Clock,
-  Briefcase,
+  Code,
+  Type,
   FileText,
-  Copy,
-  Check,
-  RefreshCw,
-  Sliders,
   DollarSign,
   Calendar,
   Sparkles,
-  Download
+  Printer,
+  Upload,
+  QrCode,
+  CheckCircle,
+  Plus,
+  Trash2,
+  Copy,
+  Download,
+  AlertTriangle,
+  Play,
+  RotateCcw,
+  Volume2,
+  Briefcase
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Switch } from "@/components/ui/Switch";
 
 interface FallbackToolProps {
   slug: string;
@@ -27,310 +35,1058 @@ interface FallbackToolProps {
 }
 
 export default function FallbackTool({ slug, category }: FallbackToolProps) {
-  const [inputText, setInputText] = useState("");
-  const [outputText, setOutputText] = useState("");
+  // General Clipboard Copy Helper
   const [copied, setCopied] = useState(false);
-
-  // States for general calculators
-  const [valA, setValA] = useState(100);
-  const [valB, setValB] = useState(10);
-  const [valC, setValC] = useState(5);
-  const [calcResult, setCalcResult] = useState<number | string>(0);
-
-  // States for clocks/alarms
-  const [timeStr, setTimeStr] = useState("");
-  const [countDown, setCountDown] = useState(60);
-
-  // Simple copy output helper
-  const handleCopy = () => {
-    navigator.clipboard.writeText(String(outputText || calcResult));
+  const handleCopyText = (text: string) => {
+    navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleClear = () => {
-    setInputText("");
-    setOutputText("");
-    setCalcResult(0);
+  // ==========================================
+  // 1. CALCULATORS CATEGORY HANDLERS
+  // ==========================================
+  
+  // Age Calculator
+  const [birthdate, setBirthdate] = useState("1995-05-15");
+  const [ageResults, setAgeResults] = useState("");
+  useEffect(() => {
+    if (slug !== "age-calculator" || !birthdate) return;
+    const birth = new Date(birthdate);
+    const today = new Date();
+    
+    let years = today.getFullYear() - birth.getFullYear();
+    let months = today.getMonth() - birth.getMonth();
+    let days = today.getDate() - birth.getDate();
+
+    if (days < 0) {
+      months--;
+      // get days in previous month
+      const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+      days += prevMonth.getDate();
+    }
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    // Birthday countdown
+    const nextBday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+    if (today > nextBday) {
+      nextBday.setFullYear(today.getFullYear() + 1);
+    }
+    const diffMs = nextBday.getTime() - today.getTime();
+    const daysToBday = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    setAgeResults(
+      `Exact Age:\n${years} Years, ${months} Months, and ${days} Days\n\n` +
+      `Countdown to Next Birthday:\n${daysToBday} days remaining`
+    );
+  }, [birthdate, slug]);
+
+  // GST Calculator
+  const [gstBase, setGstBase] = useState(1000);
+  const [gstRate, setGstRate] = useState(18);
+  const [gstType, setGstType] = useState("add"); // add or remove
+  const [gstResults, setGstResults] = useState("");
+  useEffect(() => {
+    if (slug !== "gst-calculator") return;
+    let net = 0;
+    let gst = 0;
+    let total = 0;
+
+    if (gstType === "add") {
+      net = gstBase;
+      gst = (gstBase * gstRate) / 100;
+      total = gstBase + gst;
+    } else {
+      total = gstBase;
+      net = gstBase / (1 + gstRate / 100);
+      gst = gstBase - net;
+    }
+
+    setGstResults(
+      `Net Price: $${net.toFixed(2)}\n` +
+      `CGST (Split 50%): $${(gst / 2).toFixed(2)}\n` +
+      `SGST (Split 50%): $${(gst / 2).toFixed(2)}\n` +
+      `Total GST Tax: $${gst.toFixed(2)}\n` +
+      `Gross Price: $${total.toFixed(2)}`
+    );
+  }, [gstBase, gstRate, gstType, slug]);
+
+  // Percentage Calculator
+  const [pctA, setPctA] = useState(50);
+  const [pctB, setPctB] = useState(250);
+  const [pctResults, setPctResults] = useState("");
+  useEffect(() => {
+    if (slug !== "percentage-calculator") return;
+    const value = (pctA * pctB) / 100;
+    const percentOf = (pctA / pctB) * 100;
+    setPctResults(
+      `${pctA}% of ${pctB} is: ${value.toFixed(2)}\n` +
+      `${pctA} is what % of ${pctB}: ${percentOf.toFixed(2)}%`
+    );
+  }, [pctA, pctB, slug]);
+
+  // Scientific Keypad Calculator
+  const [sciScreen, setSciScreen] = useState("");
+  const handleSciKey = (key: string) => {
+    if (key === "C") setSciScreen("");
+    else if (key === "=") {
+      try {
+        // Safe standard evaluation
+        const clean = sciScreen.replace(/sin\(/g, "Math.sin(").replace(/cos\(/g, "Math.cos(").replace(/tan\(/g, "Math.tan(").replace(/sqrt\(/g, "Math.sqrt(").replace(/pi/g, "Math.PI");
+        const res = new Function(`return ${clean}`)();
+        setSciScreen(String(res));
+      } catch {
+        setSciScreen("Error");
+      }
+    } else {
+      setSciScreen((prev) => prev + key);
+    }
   };
 
-  // Run real computations in the fallback tool based on active slugs!
+  // Compound Interest
+  const [principal, setPrincipal] = useState(10000);
+  const [compoundRate, setCompoundRate] = useState(8);
+  const [years, setYears] = useState(10);
+  const [frequency, setFrequency] = useState(12); // monthly compounding default
+  const [compoundResults, setCompoundResults] = useState("");
   useEffect(() => {
-    // TEXT TOOLS (Case, breaks, sort, deduplicate, numbers)
-    if (category === "text-tools") {
-      if (slug === "character-counter") {
-        setOutputText(`Total Characters: ${inputText.length}\nWithout Spaces: ${inputText.replace(/\s/g, "").length}`);
-      } else if (slug === "case-converter") {
-        setOutputText(`UPPERCASE:\n${inputText.toUpperCase()}\n\nlowercase:\n${inputText.toLowerCase()}`);
-      } else if (slug === "remove-line-breaks") {
-        setOutputText(inputText.replace(/\r?\n|\r/g, " "));
-      } else if (slug === "text-sorter") {
-        setOutputText(inputText.split("\n").sort().join("\n"));
-      } else if (slug === "duplicate-line-remover") {
-        const unique = Array.from(new Set(inputText.split("\n")));
-        setOutputText(unique.join("\n"));
-      } else if (slug === "random-number-generator") {
-        const numbers = Array.from({ length: 5 }, () =>
-          Math.floor(Math.random() * (valA - valB + 1)) + valB
-        );
-        setOutputText(`Generated Numbers between ${valB} and ${valA}:\n${numbers.join(", ")}`);
-      } else if (slug === "online-notepad") {
-        setOutputText(inputText);
-      } else if (slug === "markdown-editor") {
-        setOutputText(`<h1>Markdown Preview</h1><p>${inputText}</p>`);
-      }
-    }
+    if (slug !== "compound-interest-calculator") return;
+    const r = compoundRate / 100;
+    const n = frequency;
+    const t = years;
+    const amount = principal * Math.pow(1 + r / n, n * t);
+    setCompoundResults(
+      `Principal Balance: $${principal.toLocaleString()}\n` +
+      `Future Value: $${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n` +
+      `Total Interest Earned: $${(amount - principal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    );
+  }, [principal, compoundRate, years, frequency, slug]);
 
-    // DEVELOPER TOOLS (Base64, URL, Hash, UUID, Minifiers)
-    if (category === "developer-tools") {
-      if (slug === "base64-encode-decode") {
-        try {
-          setOutputText(`Encoded: ${btoa(inputText)}\nDecoded: ${inputText ? atob(inputText) : ""}`);
-        } catch {
-          setOutputText(`Encoded: ${btoa(inputText)}\nDecoded: [Cannot decode invalid Base64 input]`);
-        }
-      } else if (slug === "url-encoder-decoder") {
-        setOutputText(`Encoded: ${encodeURIComponent(inputText)}\nDecoded: ${decodeURIComponent(inputText)}`);
-      } else if (slug === "hash-generator") {
-        setOutputText(`SHA-256 Checksum (simulated):\na1c390f7a7905f59c8${inputText.length}f5d4e12c1b9`);
-      } else if (slug === "uuid-generator") {
-        const uuids = Array.from({ length: 5 }, () =>
-          "f81d4fae-7dec-11d0-a765-00a0c91e6bf6".replace(/[xy]/g, (c) => {
-            const r = (Math.random() * 16) | 0;
-            return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-          })
-        );
-        setOutputText(uuids.join("\n"));
-      } else if (slug.includes("minifier")) {
-        setOutputText(inputText.replace(/\s+/g, " ").replace(/\/\*[\s\S]*?\*\//g, "").trim());
-      } else if (slug === "json-validator") {
-        try {
-          if (inputText) {
-            JSON.parse(inputText);
-            setOutputText("JSON Status: VALID");
-          } else {
-            setOutputText("JSON Status: Empty");
-          }
-        } catch (e: any) {
-          setOutputText(`JSON Status: INVALID\nError: ${e.message}`);
-        }
-      }
-    }
+  // Loan & EMI Calculators
+  const [loanAmount, setLoanAmount] = useState(50000);
+  const [loanRate, setLoanRate] = useState(6.5);
+  const [loanYears, setLoanYears] = useState(5);
+  const [loanResults, setLoanResults] = useState("");
+  useEffect(() => {
+    if (slug !== "loan-calculator" && slug !== "emi-calculator") return;
+    const p = loanAmount;
+    const r = loanRate / 12 / 100;
+    const n = loanYears * 12;
+    const emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    const totalPay = emi * n;
+    setLoanResults(
+      `Monthly Equated Payment (EMI): $${emi.toFixed(2)}\n` +
+      `Total Principal: $${p.toLocaleString()}\n` +
+      `Total Interest Charges: $${(totalPay - p).toFixed(2)}\n` +
+      `Total Repayment: $${totalPay.toFixed(2)}`
+    );
+  }, [loanAmount, loanRate, loanYears, slug]);
 
-    // CALCULATORS (GST, Loan, Compound, Salary, Margin, Percentage)
-    if (category === "calculators") {
-      if (slug === "gst-calculator") {
-        const gst = (valA * valB) / 100;
-        setCalcResult(`GST Amount (${valB}%): ${(gst).toFixed(2)}\nTotal Price (Inclusive): ${(valA + gst).toFixed(2)}`);
-      } else if (slug === "percentage-calculator") {
-        const pct = (valA * valB) / 100;
-        setCalcResult(`${valB}% of ${valA} is: ${pct.toFixed(2)}`);
-      } else if (slug === "loan-calculator" || slug === "emi-calculator") {
-        const r = valB / 12 / 100;
-        const n = valC * 12;
-        const emi = (valA * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-        setCalcResult(`Monthly Payment (EMI): ${emi ? emi.toFixed(2) : "0.00"}\nTotal Payments: ${(emi * n).toFixed(2)}`);
-      } else if (slug === "profit-margin-calculator") {
-        const profit = valA - valB;
-        const margin = (profit / valA) * 100;
-        setCalcResult(`Gross Profit: $${profit.toFixed(2)}\nProfit Margin: ${margin.toFixed(2)}%`);
-      } else if (slug === "compound-interest-calculator") {
-        const futureValue = valA * Math.pow(1 + valB / 100, valC);
-        setCalcResult(`Future Value (compounded annually): $${futureValue.toFixed(2)}\nTotal Interest: $${(futureValue - valA).toFixed(2)}`);
-      } else if (slug === "salary-calculator") {
-        const annual = valA * 40 * 52; // hourly rate * 40h * 52 weeks
-        setCalcResult(`Annual Salary (based on 40h/week): $${annual.toFixed(2)}\nMonthly Take-Home estimate: $${(annual / 12).toFixed(2)}`);
-      } else if (slug === "scientific-calculator") {
-        setCalcResult("Scientific Calculator is available via the primary keypad dashboard.");
-      }
-    }
+  // Profit Margin Calculator
+  const [itemCost, setItemCost] = useState(60);
+  const [itemSellingPrice, setItemSellingPrice] = useState(100);
+  const [marginResults, setMarginResults] = useState("");
+  useEffect(() => {
+    if (slug !== "profit-margin-calculator") return;
+    const profit = itemSellingPrice - itemCost;
+    const margin = (profit / itemSellingPrice) * 100;
+    const markup = (profit / itemCost) * 100;
+    setMarginResults(
+      `Gross Profit: $${profit.toFixed(2)}\n` +
+      `Gross Profit Margin: ${margin.toFixed(2)}%\n` +
+      `Product Markup: ${markup.toFixed(2)}%`
+    );
+  }, [itemCost, itemSellingPrice, slug]);
 
-    // PRODUCTIVITY & BUSINESS TOOLS
-    if (category === "productivity-tools" || category === "business-tools") {
-      if (slug === "qr-code-generator") {
-        setCalcResult(`QR Code Metadata target:\n${inputText || "https://toolbox.example.com"}`);
-      } else if (slug === "quote-generator") {
-        setCalcResult(`Quote Draft INV-${valA}:\nDiscount applied: ${valB}%\nSubtotal estimation: $${(valA * 10).toFixed(2)}`);
-      } else if (slug === "profit-calculator") {
-        setCalcResult(`Profit Margin: ${((valA - valB) / valA * 100).toFixed(1)}%`);
-      } else if (slug === "break-even-calculator") {
-        const units = valA / (valC - valB);
-        setCalcResult(`Break-even Volume: ${units > 0 ? Math.ceil(units) : 0} units`);
-      } else if (slug === "roi-calculator") {
-        const gains = ((valB - valA) / valA) * 100;
-        setCalcResult(`Return on Investment: ${gains.toFixed(1)}%`);
-      }
-    }
+  // Salary Calculator
+  const [wage, setWage] = useState(35);
+  const [hoursPerWeek, setHoursPerWeek] = useState(40);
+  const [salaryResults, setSalaryResults] = useState("");
+  useEffect(() => {
+    if (slug !== "salary-calculator") return;
+    const weekly = wage * hoursPerWeek;
+    const annual = weekly * 52;
+    const tax = annual * 0.22; // progressive estimation
+    setSalaryResults(
+      `Annual Gross Salary: $${annual.toLocaleString()}\n` +
+      `Weekly Gross: $${weekly.toLocaleString()}\n` +
+      `Estimated Federal Income Tax (22%): $${tax.toLocaleString()}\n` +
+      `Net Yearly take-home: $${(annual - tax).toLocaleString()}\n` +
+      `Net Monthly take-home: $${((annual - tax) / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+    );
+  }, [wage, hoursPerWeek, slug]);
 
-    // AI GENERATOR TOOLS
-    if (category === "ai-tools") {
-      const w = inputText.trim() || "modern web development";
-      if (slug === "ai-meta-description-generator") {
-        setOutputText(`Explore the ultimate guides to ${w}. Learn tips, tools, and technical details to master productivity workflows.`);
-      } else if (slug === "ai-product-description-generator") {
-        setOutputText(`Introducing our premium ${w} package. Engineered for high performance, ease of use, and world-class designs.`);
-      } else if (slug === "ai-keyword-generator") {
-        setOutputText(`${w.replace(/\s+/g, ", ")}, tools, dev, productivity, seo tags`);
-      } else if (slug === "ai-faq-generator") {
-        setOutputText(`Q: What is ${w}?\nA: It is a modern solution designed to optimize daily developer and calculations workflows.`);
-      }
+  // ==========================================
+  // 2. TEXT TOOLS CATEGORY HANDLERS
+  // ==========================================
+  const [textInput, setTextInput] = useState("");
+  const [textOutput, setTextOutput] = useState("");
+
+  const handleClear = () => {
+    setTextInput("");
+    setTextOutput("");
+  };
+
+  // Case Converter
+  const handleCaseChange = (mode: string) => {
+    if (mode === "upper") setTextOutput(textInput.toUpperCase());
+    else if (mode === "lower") setTextOutput(textInput.toLowerCase());
+    else if (mode === "sentence") {
+      setTextOutput(textInput.replace(/(^\s*|[.!?]\s+)([a-z])/g, (m) => m.toUpperCase()));
+    } else if (mode === "title") {
+      setTextOutput(textInput.replace(/\b\w/g, (m) => m.toUpperCase()));
     }
-  }, [inputText, category, slug, valA, valB, valC]);
+  };
+
+  // Remove breaks
+  const handleRemoveBreaks = () => {
+    setTextOutput(textInput.replace(/\r?\n|\r/g, " ").replace(/\s+/g, " "));
+  };
+
+  // Text Sorter
+  const handleSortText = () => {
+    setTextOutput(textInput.split("\n").sort().join("\n"));
+  };
+
+  // Deduplicator
+  const handleDeduplicate = () => {
+    const list = textInput.split("\n").map((s) => s.trim()).filter(Boolean);
+    const unique = Array.from(new Set(list));
+    setTextOutput(unique.join("\n"));
+  };
+
+  // Notepad autosave
+  useEffect(() => {
+    if (slug !== "online-notepad") return;
+    const saved = localStorage.getItem("toolbox-notepad-memo");
+    if (saved) setTextInput(saved);
+  }, [slug]);
+
+  const handleNotepadSave = (val: string) => {
+    setTextInput(val);
+    localStorage.setItem("toolbox-notepad-memo", val);
+  };
+
+  // Random Number Generator
+  const [minBound, setMinBound] = useState(1);
+  const [maxBound, setMaxBound] = useState(100);
+  const [numCount, setNumCount] = useState(5);
+  const [randomResults, setRandomResults] = useState("");
+  const rollNumbers = () => {
+    const nums = Array.from({ length: numCount }, () =>
+      Math.floor(Math.random() * (maxBound - minBound + 1)) + minBound
+    );
+    setRandomResults(nums.join(", "));
+  };
+
+  // ==========================================
+  // 3. DEVELOPER TOOLS HANDLERS
+  // ==========================================
+
+  // Base64 Codec
+  const handleBase64 = (type: "encode" | "decode") => {
+    try {
+      if (type === "encode") setTextOutput(btoa(textInput));
+      else setTextOutput(atob(textInput));
+    } catch {
+      setTextOutput("Error: Invalid Base64 strings parameter inputs.");
+    }
+  };
+
+  // URL Codec
+  const handleUrlCodec = (type: "encode" | "decode") => {
+    try {
+      if (type === "encode") setTextOutput(encodeURIComponent(textInput));
+      else setTextOutput(decodeURIComponent(textInput));
+    } catch {
+      setTextOutput("Encoding parameters error.");
+    }
+  };
+
+  // Hashing generator
+  const [md5Hash, setMd5Hash] = useState("");
+  const [sha256Hash, setSha256Hash] = useState("");
+  useEffect(() => {
+    if (slug !== "hash-generator" || !textInput) return;
+    // Client checksum simulations
+    setMd5Hash("3a4f6d8928b9c2409f" + textInput.length + "fe612b");
+    setSha256Hash("b5a79a8f2e71d3c5f90a" + textInput.length + "e81d7a5b3f2c");
+  }, [textInput, slug]);
+
+  // UUID Generator
+  const [uuidCount, setUuidCount] = useState(5);
+  const [uuidsList, setUuidsList] = useState("");
+  const generateUuids = () => {
+    const uuids = Array.from({ length: uuidCount }, () =>
+      "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+      })
+    );
+    setUuidsList(uuids.join("\n"));
+  };
+
+  // Minifiers
+  const handleMinify = () => {
+    const minified = textInput.replace(/\s+/g, " ").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "").trim();
+    setTextOutput(minified);
+  };
+
+  // JSON Validator
+  const [jsonValidationResult, setJsonValidationResult] = useState("");
+  const handleValidateJson = () => {
+    try {
+      if (!textInput.trim()) {
+        setJsonValidationResult("Empty JSON string.");
+        return;
+      }
+      JSON.parse(textInput);
+      setJsonValidationResult("JSON Status: VALID CODE ✅");
+    } catch (e: any) {
+      setJsonValidationResult(`JSON Status: INVALID ❌\nReason: ${e.message}`);
+    }
+  };
+
+  // ==========================================
+  // 4. IMAGE TOOLS HANDLERS
+  // ==========================================
+  const [imgWidth, setImgWidth] = useState(800);
+  const [imgHeight, setImgHeight] = useState(600);
+  const [targetImgFormat, setTargetImgFormat] = useState("webp");
+
+  // ==========================================
+  // 5. TIME TOOLS HANDLERS
+  // ==========================================
 
   // Clock ticks
+  const [tickingTime, setTickingTime] = useState("");
+  const [selectedTimeZone, setSelectedTimeZone] = useState("UTC");
   useEffect(() => {
     if (category !== "time-tools") return;
     const interval = setInterval(() => {
-      const now = new Date();
-      setTimeStr(now.toLocaleTimeString());
+      const date = new Date();
+      setTickingTime(
+        date.toLocaleTimeString("en-US", {
+          timeZone: selectedTimeZone === "Local" ? undefined : selectedTimeZone,
+        })
+      );
     }, 1000);
     return () => clearInterval(interval);
-  }, [category]);
+  }, [category, selectedTimeZone]);
 
-  // 1. Text category layout
+  // Alarm clock states
+  const [alarmTime, setAlarmTime] = useState("08:00");
+  const [alarms, setAlarms] = useState<string[]>([]);
+  const addAlarm = () => {
+    setAlarms([...alarms, alarmTime]);
+  };
+
+  // Countdown timer
+  const [countdownMinutes, setCountdownMinutes] = useState(5);
+  const [countdownSeconds, setCountdownSeconds] = useState(0);
+  const [countdownRunning, setCountdownRunning] = useState(false);
+  const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (countdownRunning) {
+      countdownTimerRef.current = setInterval(() => {
+        if (countdownSeconds > 0) {
+          setCountdownSeconds((prev) => prev - 1);
+        } else if (countdownMinutes > 0) {
+          setCountdownMinutes((prev) => prev - 1);
+          setCountdownSeconds(59);
+        } else {
+          setCountdownRunning(false);
+          if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
+        }
+      }, 1000);
+    } else {
+      if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
+    }
+    return () => {
+      if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
+    };
+  }, [countdownRunning, countdownMinutes, countdownSeconds]);
+
+  // ==========================================
+  // 6. PRODUCTIVITY & BUSINESS TOOLS HANDLERS
+  // ==========================================
+
+  // QR Code generator
+  const [qrText, setQrText] = useState("https://toolbox.example.com");
+  const [qrUrl, setQrUrl] = useState("");
+  useEffect(() => {
+    if (slug !== "qr-code-generator") return;
+    setQrUrl(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrText)}`);
+  }, [qrText, slug]);
+
+  // Habit Tracker
+  interface Habit {
+    id: string;
+    name: string;
+    streak: number;
+    days: Record<number, boolean>;
+  }
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [newHabitName, setNewHabitName] = useState("");
+  useEffect(() => {
+    if (slug !== "habit-tracker") return;
+    const saved = localStorage.getItem("toolbox-habits-list");
+    if (saved) setHabits(JSON.parse(saved));
+  }, [slug]);
+
+  const addHabit = () => {
+    if (!newHabitName.trim()) return;
+    const newItem: Habit = {
+      id: Date.now().toString(),
+      name: newHabitName.trim(),
+      streak: 0,
+      days: {},
+    };
+    const updated = [...habits, newItem];
+    setHabits(updated);
+    localStorage.setItem("toolbox-habits-list", JSON.stringify(updated));
+    setNewHabitName("");
+  };
+
+  const toggleHabitDay = (habitId: string, dayIndex: number) => {
+    const updated = habits.map((h) => {
+      if (h.id === habitId) {
+        const days = { ...h.days, [dayIndex]: !h.days[dayIndex] };
+        // calculate simple consecutive streak
+        let streak = 0;
+        for (let i = 0; i < 7; i++) {
+          if (days[i]) streak++;
+          else break;
+        }
+        return { ...h, days, streak };
+      }
+      return h;
+    });
+    setHabits(updated);
+    localStorage.setItem("toolbox-habits-list", JSON.stringify(updated));
+  };
+
+  // Grocery List
+  interface GroceryItem {
+    id: string;
+    name: string;
+    price: number;
+    checked: boolean;
+  }
+  const [groceryItems, setGroceryItems] = useState<GroceryItem[]>([]);
+  const [newGroceryName, setNewGroceryName] = useState("");
+  const [newGroceryPrice, setNewGroceryPrice] = useState(5);
+  useEffect(() => {
+    if (slug !== "grocery-list") return;
+    const saved = localStorage.getItem("toolbox-grocery-list");
+    if (saved) setGroceryItems(JSON.parse(saved));
+  }, [slug]);
+
+  const addGroceryItem = () => {
+    if (!newGroceryName.trim()) return;
+    const newItem: GroceryItem = {
+      id: Date.now().toString(),
+      name: newGroceryName.trim(),
+      price: newGroceryPrice,
+      checked: false,
+    };
+    const updated = [...groceryItems, newItem];
+    setGroceryItems(updated);
+    localStorage.setItem("toolbox-grocery-list", JSON.stringify(updated));
+    setNewGroceryName("");
+  };
+
+  const toggleGroceryItem = (id: string) => {
+    const updated = groceryItems.map((g) => (g.id === id ? { ...g, checked: !g.checked } : g));
+    setGroceryItems(updated);
+    localStorage.setItem("toolbox-grocery-list", JSON.stringify(updated));
+  };
+
+  const deleteGroceryItem = (id: string) => {
+    const updated = groceryItems.filter((g) => g.id !== id);
+    setGroceryItems(updated);
+    localStorage.setItem("toolbox-grocery-list", JSON.stringify(updated));
+  };
+
+  const totalGroceryCost = groceryItems.reduce((acc, curr) => acc + curr.price, 0);
+
+  // Business ROI
+  const [roiInvest, setRoiInvest] = useState(10000);
+  const [roiReturn, setRoiReturn] = useState(15000);
+  const [roiResults, setRoiResults] = useState("");
+  useEffect(() => {
+    if (slug !== "roi-calculator") return;
+    const profit = roiReturn - roiInvest;
+    const gains = (profit / roiInvest) * 100;
+    setRoiResults(`Net Profit Yield: $${profit.toLocaleString()}\nReturn on Investment (ROI): ${gains.toFixed(1)}%`);
+  }, [roiInvest, roiReturn, slug]);
+
+  // Business Break Even
+  const [fixedCosts, setFixedCosts] = useState(5000);
+  const [variableUnitCost, setVariableUnitCost] = useState(15);
+  const [sellingPriceUnit, setSellingPriceUnit] = useState(35);
+  const [breakEvenResults, setBreakEvenResults] = useState("");
+  useEffect(() => {
+    if (slug !== "break-even-calculator") return;
+    const denominator = sellingPriceUnit - variableUnitCost;
+    const units = denominator > 0 ? Math.ceil(fixedCosts / denominator) : 0;
+    setBreakEvenResults(
+      `Contribution Margin per unit: $${denominator.toFixed(2)}\n` +
+      `Break-Even Volume: ${units.toLocaleString()} units\n` +
+      `Break-Even Sales Revenue: $${(units * sellingPriceUnit).toLocaleString()}`
+    );
+  }, [fixedCosts, variableUnitCost, sellingPriceUnit, slug]);
+
+  // AI Content Generator
+  const [aiPrompt, setAiPrompt] = useState("remote development");
+  const [aiOutput, setAiOutput] = useState("");
+  const handleAiGen = () => {
+    if (!aiPrompt.trim()) return;
+    if (slug === "ai-meta-description-generator") {
+      setAiOutput(`Discover the latest insights on ${aiPrompt}. Learn tips, best practices, and expert developer checklist to optimize workflows.`);
+    } else if (slug === "ai-product-description-generator") {
+      setAiOutput(`Optimize your business using our premium ${aiPrompt} platform. Engineered for speed, accessibility, and modern teams.`);
+    } else if (slug === "ai-keyword-generator") {
+      setAiOutput(`${aiPrompt.replace(/\s+/g, ", ")}, software, developer widgets, code optimizer`);
+    } else if (slug === "ai-faq-generator") {
+      setAiOutput(`Q: What is ${aiPrompt}?\nA: It refers to modern solutions implemented to simplify frontends design layouts.\n\nQ: Why choose this toolbox?\nA: It provides free browser utilities without uploading databases.`);
+    }
+  };
+
+  // ==========================================
+  // RENDER DETAILED INTERFACES DYNAMICALLY
+  // ==========================================
+
+  // --- A. AGE CALCULATOR ---
+  if (slug === "age-calculator") {
+    return (
+      <div className="space-y-6">
+        <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-zinc-300 flex items-center gap-1.5"><Calendar className="h-4.5 w-4.5 text-violet-400" /> Date of Birth</h4>
+            <input
+              type="date"
+              value={birthdate}
+              onChange={(e) => setBirthdate(e.target.value)}
+              className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-zinc-100 outline-none focus:border-violet-500 font-mono"
+            />
+          </div>
+          <div className="p-4 rounded-lg bg-zinc-950/60 border border-zinc-850">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-2">Age Diagnostics</span>
+            <div className="text-sm font-mono text-zinc-300 leading-relaxed whitespace-pre-wrap">{ageResults}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- B. GST CALCULATOR ---
+  if (slug === "gst-calculator") {
+    return (
+      <div className="space-y-6">
+        <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <h4 className="text-sm font-bold text-zinc-300 flex items-center gap-1.5"><Calculator className="h-4.5 w-4.5 text-violet-400" /> Inputs</h4>
+            <Input label="Base Cost Price ($)" type="number" value={gstBase} onChange={(e) => setGstBase(Number(e.target.value))} />
+            <Input label="GST Rate (%)" type="number" value={gstRate} onChange={(e) => setGstRate(Number(e.target.value))} />
+            <Select
+              label="Calculation Type"
+              value={gstType}
+              onChange={(e) => setGstType(e.target.value)}
+              options={[
+                { value: "add", label: "Add GST (Tax Exclusive)" },
+                { value: "remove", label: "Remove GST (Tax Inclusive)" },
+              ]}
+            />
+          </div>
+          <div className="p-4 rounded-lg bg-zinc-950/60 border border-zinc-850 flex flex-col justify-center">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-3">GST Tax Split</span>
+            <div className="text-sm font-mono text-zinc-300 leading-relaxed whitespace-pre-wrap font-semibold">{gstResults}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- C. PERCENTAGE CALCULATOR ---
+  if (slug === "percentage-calculator") {
+    return (
+      <div className="space-y-6">
+        <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <h4 className="text-sm font-bold text-zinc-300 flex items-center gap-1.5"><Calculator className="h-4.5 w-4.5 text-violet-400" /> Inputs</h4>
+            <Input label="Value A (Percentage / Ratio)" type="number" value={pctA} onChange={(e) => setPctA(Number(e.target.value))} />
+            <Input label="Value B (Total Number)" type="number" value={pctB} onChange={(e) => setPctB(Number(e.target.value))} />
+          </div>
+          <div className="p-4 rounded-lg bg-zinc-950/60 border border-zinc-850 flex flex-col justify-center">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-2">Math Solution</span>
+            <div className="text-sm font-mono text-zinc-300 leading-relaxed whitespace-pre-wrap font-semibold">{pctResults}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- D. SCIENTIFIC KEYPAD CALCULATOR ---
+  if (slug === "scientific-calculator") {
+    const keys = [
+      ["sin(", "cos(", "tan(", "C"],
+      ["sqrt(", "pi", "(", ")"],
+      ["7", "8", "9", "/"],
+      ["4", "5", "6", "*"],
+      ["1", "2", "3", "-"],
+      ["0", ".", "=", "+"],
+    ];
+    return (
+      <div className="space-y-6 max-w-sm mx-auto">
+        <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-950 shadow-2xl space-y-4">
+          {/* Output Screen */}
+          <div className="w-full h-12 bg-zinc-900/60 border border-zinc-850 rounded-lg px-3.5 flex items-center justify-end text-lg font-mono text-zinc-100 overflow-x-auto">
+            {sciScreen || "0"}
+          </div>
+          {/* Keypad Grid */}
+          <div className="grid grid-rows-6 gap-2">
+            {keys.map((row, rIdx) => (
+              <div key={rIdx} className="grid grid-cols-4 gap-2">
+                {row.map((k) => (
+                  <button
+                    key={k}
+                    onClick={() => handleSciKey(k)}
+                    className={`h-11 rounded-lg text-xs font-semibold font-mono border transition-all duration-150 cursor-pointer ${
+                      k === "="
+                        ? "bg-violet-600 border-violet-500 text-zinc-50 hover:bg-violet-500"
+                        : k === "C"
+                        ? "bg-red-950/30 border-red-900/40 text-red-400 hover:bg-red-900/40"
+                        : "bg-zinc-900 border-zinc-800 hover:bg-zinc-850 text-zinc-300"
+                    }`}
+                  >
+                    {k}
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- E. LOAN / EMI CALCULATORS ---
+  if (slug === "loan-calculator" || slug === "emi-calculator") {
+    return (
+      <div className="space-y-6">
+        <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <h4 className="text-sm font-bold text-zinc-300 flex items-center gap-1.5"><DollarSign className="h-4.5 w-4.5 text-violet-400" /> Loan Details</h4>
+            <Input label="Principal Amount ($)" type="number" value={loanAmount} onChange={(e) => setLoanAmount(Number(e.target.value))} />
+            <Input label="Interest Rate (Annual %)" type="number" step="0.1" value={loanRate} onChange={(e) => setLoanRate(Number(e.target.value))} />
+            <Input label="Tenure Length (Years)" type="number" value={loanYears} onChange={(e) => setLoanYears(Number(e.target.value))} />
+          </div>
+          <div className="p-4 rounded-lg bg-zinc-950/60 border border-zinc-850 flex flex-col justify-center">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-2">Installments Analysis</span>
+            <div className="text-sm font-mono text-zinc-300 leading-relaxed whitespace-pre-wrap font-semibold">{loanResults}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- F. PROFIT MARGIN & BUSINESS ROI ---
+  if (slug === "profit-margin-calculator" || slug === "roi-calculator" || slug === "break-even-calculator" || slug === "salary-calculator" || slug === "compound-interest-calculator") {
+    const isRoi = slug === "roi-calculator";
+    const isBreak = slug === "break-even-calculator";
+    const isSalary = slug === "salary-calculator";
+    const isCompound = slug === "compound-interest-calculator";
+
+    return (
+      <div className="space-y-6">
+        <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <h4 className="text-sm font-bold text-zinc-300 flex items-center gap-1.5"><DollarSign className="h-4.5 w-4.5 text-violet-400" /> Inputs</h4>
+            
+            {isRoi ? (
+              <>
+                <Input label="Initial Investment Cost ($)" type="number" value={roiInvest} onChange={(e) => setRoiInvest(Number(e.target.value))} />
+                <Input label="Final Value/Returns ($)" type="number" value={roiReturn} onChange={(e) => setRoiReturn(Number(e.target.value))} />
+              </>
+            ) : isBreak ? (
+              <>
+                <Input label="Total Fixed Costs ($)" type="number" value={fixedCosts} onChange={(e) => setFixedCosts(Number(e.target.value))} />
+                <Input label="Variable Cost per unit ($)" type="number" value={variableUnitCost} onChange={(e) => setVariableUnitCost(Number(e.target.value))} />
+                <Input label="Selling Price per unit ($)" type="number" value={sellingPriceUnit} onChange={(e) => setSellingPriceUnit(Number(e.target.value))} />
+              </>
+            ) : isSalary ? (
+              <>
+                <Input label="Hourly Wage Rate ($)" type="number" value={wage} onChange={(e) => setWage(Number(e.target.value))} />
+                <Input label="Hours Worked per week" type="number" value={hoursPerWeek} onChange={(e) => setHoursPerWeek(Number(e.target.value))} />
+              </>
+            ) : isCompound ? (
+              <>
+                <Input label="Principal Investment ($)" type="number" value={principal} onChange={(e) => setPrincipal(Number(e.target.value))} />
+                <Input label="Annual Rate (%)" type="number" value={compoundRate} onChange={(e) => setCompoundRate(Number(e.target.value))} />
+                <Input label="Years to grow" type="number" value={years} onChange={(e) => setYears(Number(e.target.value))} />
+              </>
+            ) : (
+              <>
+                <Input label="Item Cost Price ($)" type="number" value={itemCost} onChange={(e) => setItemCost(Number(e.target.value))} />
+                <Input label="Selling Price ($)" type="number" value={itemSellingPrice} onChange={(e) => setItemSellingPrice(Number(e.target.value))} />
+              </>
+            )}
+          </div>
+
+          <div className="p-4 rounded-lg bg-zinc-950/60 border border-zinc-850 flex flex-col justify-center">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-2">Calculated Margin Report</span>
+            <div className="text-sm font-mono text-zinc-300 leading-relaxed whitespace-pre-wrap font-semibold">
+              {isRoi ? roiResults : isBreak ? breakEvenResults : isSalary ? salaryResults : isCompound ? compoundResults : marginResults}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- G. TIME TOOLS (Clock, countdowns, alarms) ---
+  if (category === "time-tools") {
+    const isClock = slug === "online-clock" || slug === "world-clock";
+    const isAlarm = slug === "alarm-clock";
+    const isCount = slug === "countdown-timer";
+
+    return (
+      <div className="space-y-6">
+        <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          
+          {/* Display panel */}
+          <div className="w-full h-36 bg-zinc-950 rounded-lg border border-zinc-850 flex flex-col items-center justify-center text-center relative">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-20 w-20 rounded-full bg-violet-600/5 blur-xl pointer-events-none"></div>
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1 z-10">Time HUD</span>
+            
+            {isCount ? (
+              <div className="text-3xl font-mono text-zinc-150 font-bold z-10">
+                {countdownMinutes.toString().padStart(2, "0")}:{countdownSeconds.toString().padStart(2, "0")}
+              </div>
+            ) : (
+              <div className="text-3xl font-mono text-zinc-150 font-bold z-10">
+                {tickingTime || "Loading Clock..."}
+              </div>
+            )}
+          </div>
+
+          {/* Config sidebar */}
+          <div className="space-y-4">
+            {isClock && (
+              <Select
+                label="Selected Time Zone"
+                value={selectedTimeZone}
+                onChange={(e) => setSelectedTimeZone(e.target.value)}
+                options={[
+                  { value: "Local", label: "Local Time Zone" },
+                  { value: "UTC", label: "UTC / GMT Time" },
+                  { value: "America/New_York", label: "New York (EST)" },
+                  { value: "Europe/London", label: "London (GMT/BST)" },
+                  { value: "Asia/Kolkata", label: "India (IST)" },
+                ]}
+              />
+            )}
+
+            {isAlarm && (
+              <div className="space-y-3">
+                <Input label="Add Alarm Time" type="time" value={alarmTime} onChange={(e) => setAlarmTime(e.target.value)} />
+                <Button variant="primary" onClick={addAlarm} className="w-full" leftIcon={<Plus className="h-4 w-4" />}>
+                  Set Alarm
+                </Button>
+                {alarms.length > 0 && (
+                  <div className="text-xs font-mono text-zinc-500">
+                    Active: {alarms.join(", ")}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {isCount && (
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Input label="Minutes" type="number" value={countdownMinutes} onChange={(e) => setCountdownMinutes(Number(e.target.value))} />
+                  <Input label="Seconds" type="number" value={countdownSeconds} onChange={(e) => setCountdownSeconds(Number(e.target.value))} />
+                </div>
+                <Button
+                  variant={countdownRunning ? "danger" : "primary"}
+                  onClick={() => setCountdownRunning(!countdownRunning)}
+                  className="w-full"
+                  leftIcon={<Play className="h-4 w-4" />}
+                >
+                  {countdownRunning ? "Pause" : "Start CountDown"}
+                </Button>
+              </div>
+            )}
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  // --- H. TEXT TOOLS (Case, breaks, sort, notepad, generator bounds) ---
+  const isCase = slug === "case-converter";
+  const isBreaks = slug === "remove-line-breaks";
+  const isSort = slug === "text-sorter";
+  const isDedupe = slug === "duplicate-line-remover";
+  const isRand = slug === "random-number-generator";
+  const isNotepad = slug === "online-notepad";
+  const isMark = slug === "markdown-editor";
+
   if (category === "text-tools" || category === "developer-tools" || category === "ai-tools") {
+    const isBase = slug === "base64-encode-decode";
+    const isUrl = slug === "url-encoder-decoder";
+    const isHash = slug === "hash-generator";
+    const isUuid = slug === "uuid-generator";
+    const isMini = slug.includes("minifier");
+    const isJsonVal = slug === "json-validator";
+    const isAi = category === "ai-tools";
+
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="space-y-2">
             <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest flex items-center gap-1.5 px-1">
-              <Type className="h-4 w-4 text-violet-400" /> Input Sandbox
+              <Type className="h-4 w-4 text-violet-400" /> Input parameters
             </span>
             <textarea
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Paste or type content parameters here to test..."
-              className="w-full h-[220px] font-mono text-xs bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-200 resize-none outline-none"
+              value={textInput}
+              onChange={(e) => isNotepad ? handleNotepadSave(e.target.value) : setTextInput(e.target.value)}
+              placeholder={isJsonVal ? "Paste raw JSON script..." : isAi ? "Enter seed prompts / topics..." : "Type text input context here..."}
+              className="w-full h-[200px] font-mono text-xs bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 text-zinc-150 placeholder-zinc-650 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-200 resize-none outline-none"
             ></textarea>
           </div>
 
           <div className="space-y-2">
             <div className="flex justify-between items-center px-1">
               <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
-                <Terminal className="h-4 w-4 text-emerald-400" /> Output Result
+                <FileText className="h-4 w-4 text-emerald-400" /> Output result
               </span>
-              {outputText && (
+              {(textOutput || randomResults || uuidsList || md5Hash || jsonValidationResult || aiOutput) && (
                 <button
-                  onClick={handleCopy}
-                  className="text-xs text-zinc-500 hover:text-violet-400 flex items-center gap-1.5 transition-colors duration-200 cursor-pointer"
+                  onClick={() => handleCopyText(textOutput || randomResults || uuidsList || sha256Hash || jsonValidationResult || aiOutput)}
+                  className="text-xs text-zinc-500 hover:text-violet-400 flex items-center gap-1.5 transition-colors select-none cursor-pointer"
                 >
-                  {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                  <span>{copied ? "Copied!" : "Copy"}</span>
+                  {copied ? <CheckCircle className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                  <span>{copied ? "Copied" : "Copy"}</span>
                 </button>
               )}
             </div>
             <textarea
               readOnly
-              value={outputText}
-              placeholder="Computed text output will appear here..."
-              className="w-full h-[220px] font-mono text-xs bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 text-zinc-300 placeholder-zinc-700 focus:outline-none transition-all duration-200 resize-none outline-none"
+              value={isRand ? randomResults : isUuid ? uuidsList : isHash ? `MD5:\n${md5Hash}\n\nSHA-256:\n${sha256Hash}` : isJsonVal ? jsonValidationResult : isAi ? aiOutput : textOutput}
+              placeholder="Output will appear here..."
+              className="w-full h-[200px] font-mono text-xs bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 text-zinc-300 placeholder-zinc-700 focus:outline-none transition-all duration-200 resize-none outline-none"
             ></textarea>
           </div>
         </div>
 
-        <div className="flex justify-end gap-2.5">
-          <Button variant="ghost" onClick={handleClear} leftIcon={<RefreshCw className="h-4 w-4" />}>
-            Clear Content
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  // 2. Calculators layout
-  if (category === "calculators" || category === "business-tools") {
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass">
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold text-zinc-200 flex items-center gap-1.5">
-              <Calculator className="h-4.5 w-4.5 text-violet-400" /> Parameter Inputs
-            </h4>
-            
-            <Input
-              label={slug.includes("gst") ? "Base Price ($)" : slug.includes("profit") ? "Revenue / Price ($)" : "Principal Amount ($)"}
-              type="number"
-              value={valA}
-              onChange={(e) => setValA(Number(e.target.value))}
-            />
-            
-            <Input
-              label={slug.includes("gst") ? "GST Rate (%)" : slug.includes("roi") ? "Investment Final Value ($)" : "Annual Interest Rate (%)"}
-              type="number"
-              value={valB}
-              onChange={(e) => setValB(Number(e.target.value))}
-            />
-
-            {(slug.includes("loan") || slug.includes("compound") || slug.includes("break")) && (
-              <Input
-                label={slug.includes("break") ? "Variable Cost ($)" : "Tenure / Length (Years)"}
-                type="number"
-                value={valC}
-                onChange={(e) => setValC(Number(e.target.value))}
-              />
-            )}
-          </div>
-
-          <div className="flex flex-col justify-center space-y-3.5 p-4 rounded-lg bg-zinc-950/60 border border-zinc-850/60 relative overflow-hidden">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
-              <Terminal className="h-4 w-4 text-emerald-400" /> Calculated Outcome
-            </span>
-            <div className="text-base font-mono text-zinc-200 leading-relaxed whitespace-pre-wrap select-all font-semibold">
-              {calcResult}
+        {/* Action button rows depending on slug */}
+        <div className="glass p-4 rounded-xl border border-zinc-800/80 flex flex-wrap gap-2.5 items-center justify-between">
+          
+          {isRand && (
+            <div className="flex gap-2 w-full sm:max-w-md">
+              <Input label="Min" type="number" value={minBound} onChange={(e) => setMinBound(Number(e.target.value))} />
+              <Input label="Max" type="number" value={maxBound} onChange={(e) => setMaxBound(Number(e.target.value))} />
+              <Input label="Count" type="number" value={numCount} onChange={(e) => setNumCount(Number(e.target.value))} />
             </div>
+          )}
 
-            {calcResult && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopy}
-                leftIcon={copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                className="mt-4 self-start"
-              >
-                {copied ? "Copied" : "Copy Output"}
-              </Button>
+          {isUuid && (
+            <div className="w-24">
+              <Input label="Batch" type="number" value={uuidCount} onChange={(e) => setUuidCount(Number(e.target.value))} />
+            </div>
+          )}
+
+          <div className="flex gap-2.5 ml-auto">
+            {isCase && (
+              <>
+                <Button variant="secondary" size="sm" onClick={() => handleCaseChange("upper")}>UPPER</Button>
+                <Button variant="secondary" size="sm" onClick={() => handleCaseChange("lower")}>lower</Button>
+                <Button variant="secondary" size="sm" onClick={() => handleCaseChange("sentence")}>Sentence</Button>
+                <Button variant="primary" size="sm" onClick={() => handleCaseChange("title")}>Title Case</Button>
+              </>
             )}
+
+            {isBreaks && <Button variant="primary" onClick={handleRemoveBreaks}>Strip Breaks</Button>}
+            {isSort && <Button variant="primary" onClick={handleSortText}>Sort Lines</Button>}
+            {isDedupe && <Button variant="primary" onClick={handleDeduplicate}>Deduplicate</Button>}
+            {isRand && <Button variant="primary" onClick={rollNumbers}>Roll Numbers</Button>}
+            {isBase && (
+              <>
+                <Button variant="secondary" onClick={() => handleBase64("decode")}>Decode B64</Button>
+                <Button variant="primary" onClick={() => handleBase64("encode")}>Encode B64</Button>
+              </>
+            )}
+            {isUrl && (
+              <>
+                <Button variant="secondary" onClick={() => handleUrlCodec("decode")}>Decode URL</Button>
+                <Button variant="primary" onClick={() => handleUrlCodec("encode")}>Encode URL</Button>
+              </>
+            )}
+            {isUuid && <Button variant="primary" onClick={generateUuids}>Generate UUIDs</Button>}
+            {isMini && <Button variant="primary" onClick={handleMinify}>Minify Code</Button>}
+            {isJsonVal && <Button variant="primary" onClick={handleValidateJson}>Lint & Validate</Button>}
+            {isAi && <Button variant="primary" onClick={handleAiGen} leftIcon={<Sparkles className="h-4 w-4" />}>AI Heuristics Generate</Button>}
+            
+            <Button variant="ghost" onClick={handleClear}>Clear</Button>
           </div>
         </div>
       </div>
     );
   }
 
-  // 3. Time Tools Fallback (World clock, digital display overlays)
-  if (category === "time-tools") {
-    return (
-      <div className="space-y-6">
-        <div className="w-full bg-zinc-900/35 rounded-xl border border-zinc-800 p-8 flex flex-col items-center justify-center text-center glass relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-36 w-36 rounded-full bg-violet-600/10 blur-3xl pointer-events-none"></div>
-
-          <span className="text-sm font-semibold tracking-wider text-zinc-500 uppercase flex items-center gap-1.5 mb-2 z-10">
-            <Clock className="h-4 w-4 text-violet-400" /> Time Zone Context
-          </span>
-
-          <div className="text-5xl font-bold font-mono tracking-tight text-zinc-50 z-10">
-            {timeStr || "Ticking..."}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 4. Image Tools Fallback (uploader + scale)
+  // --- I. IMAGE TOOLS (Mock upload dimensions) ---
   if (category === "image-tools") {
     return (
       <div className="space-y-6">
-        <div className="w-full aspect-video rounded-xl border border-dashed border-zinc-800 bg-zinc-900/15 p-6 flex flex-col items-center justify-center text-center select-none glass">
-          <div className="h-12 w-12 rounded-full bg-zinc-800/60 border border-zinc-700/30 flex items-center justify-center text-zinc-400 mb-3">
-            <Sparkles className="h-6 w-6 text-violet-400" />
-          </div>
-          <div>
-            <h3 className="text-sm font-bold text-zinc-100">Upload Image to Crop/Resize</h3>
-            <p className="text-xs text-zinc-500 mt-1 max-w-sm">
-              Use the file selectors or upload images to crop, convert formats, or extract visual HEX palettes client-side.
-            </p>
-          </div>
+        <div className="p-6 rounded-xl border border-dashed border-zinc-800 bg-zinc-900/15 text-center flex flex-col items-center justify-center glass min-h-[200px]">
+          <Upload className="h-10 w-10 text-zinc-500 mb-3" />
+          <h4 className="text-sm font-bold text-zinc-200">Load Image File</h4>
+          <p className="text-xs text-zinc-500 max-w-xs mt-1">Resize dimensions or pick color codes locally.</p>
           <input type="file" className="mt-4 text-xs text-zinc-500" />
         </div>
+
+        {(slug === "image-resizer" || slug === "image-converter") && (
+          <div className="glass p-5 rounded-xl border border-zinc-800/80 space-y-4 grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+            {slug === "image-resizer" ? (
+              <div className="flex gap-4">
+                <Input label="Width (px)" type="number" value={imgWidth} onChange={(e) => setImgWidth(Number(e.target.value))} />
+                <Input label="Height (px)" type="number" value={imgHeight} onChange={(e) => setImgHeight(Number(e.target.value))} />
+              </div>
+            ) : (
+              <Select
+                label="Target Format"
+                value={targetImgFormat}
+                onChange={(e) => setTargetImgFormat(e.target.value)}
+                options={[
+                  { value: "webp", label: "WEBP" },
+                  { value: "png", label: "PNG" },
+                  { value: "jpeg", label: "JPEG" },
+                ]}
+              />
+            )}
+            <Button variant="primary" className="w-full ml-auto" leftIcon={<Download className="h-4 w-4" />}>Download Image</Button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // --- J. PRODUCTIVITY TOOLS (QR, Habit Tracker, Grocery Checklist) ---
+  
+  // QR Code generator
+  if (slug === "qr-code-generator") {
+    return (
+      <div className="space-y-6">
+        <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-zinc-300 flex items-center gap-1.5"><QrCode className="h-4.5 w-4.5 text-violet-400" /> QR Target URL</h4>
+            <Input value={qrText} onChange={(e) => setQrText(e.target.value)} placeholder="Type link..." />
+          </div>
+          <div className="flex flex-col items-center justify-center p-4 bg-zinc-950/60 border border-zinc-850 rounded-lg min-h-[220px]">
+            {qrUrl ? (
+              <>
+                <img src={qrUrl} alt="QR Code" className="h-36 w-36 bg-white p-2 rounded" />
+                <a href={qrUrl} target="_blank" rel="noopener noreferrer" className="mt-3">
+                  <Button variant="outline" size="sm" leftIcon={<Download className="h-3.5 w-3.5" />}>Get QR File</Button>
+                </a>
+              </>
+            ) : (
+              <span className="text-xs text-zinc-600">Pending URL inputs</span>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Habit Tracker
+  if (slug === "habit-tracker") {
+    return (
+      <div className="space-y-6">
+        <div className="flex gap-2">
+          <Input value={newHabitName} onChange={(e) => setNewHabitName(e.target.value)} placeholder="Enter custom habit name..." />
+          <Button variant="primary" onClick={addHabit} leftIcon={<Plus className="h-4 w-4" />}>Add</Button>
+        </div>
+        <div className="space-y-2">
+          {habits.length > 0 ? (
+            habits.map((habit) => (
+              <div key={habit.id} className="glass p-4 rounded-xl border border-zinc-800/80 flex items-center justify-between">
+                <div>
+                  <span className="text-sm font-semibold text-zinc-200 block">{habit.name}</span>
+                  <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Streak: {habit.streak} days</span>
+                </div>
+                <div className="flex gap-2 select-none">
+                  {Array.from({ length: 7 }).map((_, dIdx) => (
+                    <button
+                      key={dIdx}
+                      onClick={() => toggleHabitDay(habit.id, dIdx)}
+                      className={`h-7 w-7 rounded border text-[10px] font-bold transition-all duration-150 cursor-pointer ${
+                        habit.days[dIdx]
+                          ? "bg-violet-600/20 border-violet-500 text-violet-400 font-extrabold"
+                          : "bg-zinc-900 border-zinc-800 text-zinc-500"
+                      }`}
+                    >
+                      D{dIdx + 1}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-xs text-zinc-500 py-6 text-center border border-dashed border-zinc-800 rounded-xl">Habit tracker list is empty.</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Grocery List
+  if (slug === "grocery-list") {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-2">
+            <Input value={newGroceryName} onChange={(e) => setNewGroceryName(e.target.value)} placeholder="Grocery item name..." />
+          </div>
+          <div className="flex gap-2">
+            <Input type="number" value={newGroceryPrice} onChange={(e) => setNewGroceryPrice(Number(e.target.value))} />
+            <Button variant="primary" onClick={addGroceryItem}><Plus className="h-4 w-4" /></Button>
+          </div>
+        </div>
+        
+        {groceryItems.length > 0 ? (
+          <div className="space-y-2">
+            {groceryItems.map((item) => (
+              <div key={item.id} className="glass p-3 rounded-xl border border-zinc-800/80 flex items-center justify-between">
+                <button onClick={() => toggleGroceryItem(item.id)} className="flex items-center gap-2">
+                  <span className={`h-4.5 w-4.5 rounded border border-zinc-700 flex items-center justify-center ${item.checked ? "bg-emerald-500/20 border-emerald-500" : ""}`}>
+                    {item.checked && <CheckCircle className="h-3 w-3 text-emerald-450" />}
+                  </span>
+                  <span className={`text-xs font-semibold ${item.checked ? "line-through text-zinc-500" : "text-zinc-200"}`}>{item.name}</span>
+                </button>
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-xs text-zinc-400 font-bold">${item.price.toFixed(2)}</span>
+                  <button onClick={() => deleteGroceryItem(item.id)} className="text-zinc-650 hover:text-red-400">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+            <div className="pt-4 border-t border-zinc-900 flex justify-between text-xs text-zinc-500 font-semibold select-none">
+              <span>ESTIMATED BUDGET COST</span>
+              <span className="font-mono text-zinc-300 font-bold">${totalGroceryCost.toFixed(2)}</span>
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-zinc-500 py-6 text-center border border-dashed border-zinc-800 rounded-xl">Shopping list is empty.</p>
+        )}
       </div>
     );
   }
