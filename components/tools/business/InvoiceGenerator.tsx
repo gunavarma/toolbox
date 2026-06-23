@@ -25,6 +25,7 @@ export default function InvoiceGenerator() {
   const [currency, setCurrency] = useState("$");
   const [taxPercent, setTaxPercent] = useState(10);
   const [discountPercent, setDiscountPercent] = useState(0);
+  const [isQuote, setIsQuote] = useState(false);
 
   const [items, setItems] = useState<InvoiceItem[]>([
     { id: "1", description: "Design Consulting Services", quantity: 10, rate: 75 },
@@ -37,6 +38,12 @@ export default function InvoiceGenerator() {
     const in30Days = new Date();
     in30Days.setDate(in30Days.getDate() + 30);
     setDueDate(in30Days.toISOString().substring(0, 10));
+    
+    const quoteMode = window.location.pathname.includes("quote-generator");
+    setIsQuote(quoteMode);
+    if (quoteMode) {
+      setInvoiceNumber("QT-1001");
+    }
   }, []);
 
   const handleAddItem = () => {
@@ -90,7 +97,7 @@ export default function InvoiceGenerator() {
         <div className="flex flex-col sm:flex-row justify-between gap-6 pb-8 border-b border-zinc-900 print:border-zinc-200">
           <div className="space-y-3 print:space-y-2">
             <h3 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-2 print:text-black select-none">
-              <Landmark className="h-5 w-5 text-violet-500 print:text-black" /> INVOICE SHEET
+              <Landmark className="h-5 w-5 text-violet-500 print:text-black" /> {isQuote ? "QUOTE SHEET" : "INVOICE SHEET"}
             </h3>
             
             {/* Input boxes for Sender */}
@@ -120,7 +127,7 @@ export default function InvoiceGenerator() {
 
           <div className="space-y-3.5 sm:text-right print:text-right">
             <div>
-              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Invoice ID</span>
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">{isQuote ? "Quote ID" : "Invoice ID"}</span>
               <input
                 type="text"
                 value={invoiceNumber}
@@ -140,7 +147,7 @@ export default function InvoiceGenerator() {
                 />
               </div>
               <div>
-                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block">Due Date</span>
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block">{isQuote ? "Expiry Date" : "Due Date"}</span>
                 <input
                   type="date"
                   value={dueDate}
@@ -300,7 +307,7 @@ export default function InvoiceGenerator() {
               <span className="font-mono text-zinc-300 print:text-black font-semibold">{currency}{taxAmount.toFixed(2)}</span>
             </div>
             <div className="flex justify-between py-3 items-center text-sm font-bold border-t-2 border-zinc-800 print:border-zinc-400">
-              <span className="text-zinc-100 print:text-black">Total Due</span>
+              <span className="text-zinc-100 print:text-black">{isQuote ? "Total Estimate" : "Total Due"}</span>
               <span className="font-mono text-violet-400 print:text-black">{currency}{grandTotal.toFixed(2)}</span>
             </div>
           </div>
@@ -310,7 +317,7 @@ export default function InvoiceGenerator() {
       {/* Print Trigger Button */}
       <div className="flex justify-center select-none print:hidden">
         <Button variant="primary" onClick={handlePrint} leftIcon={<Printer className="h-4 w-4" />}>
-          Print or Save PDF Invoice
+          {isQuote ? "Print or Save PDF Quote" : "Print or Save PDF Invoice"}
         </Button>
       </div>
     </div>

@@ -84,5 +84,9 @@ export const toolComponents: Record<string, React.ComponentType<any>> = {
   "business/InvoiceGenerator": dynamic(() => import("./business/InvoiceGenerator"), {
     ssr: false,
     loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Invoice Generator...</div>
+  }),
+  "business/QuoteGenerator": dynamic(() => import("./business/InvoiceGenerator"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Quote Generator...</div>
   })
 };

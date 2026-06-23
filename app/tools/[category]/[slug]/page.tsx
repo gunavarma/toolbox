@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Check, Compass, Star, ListOrdered, BookOpen } from "lucide-react";
+import { Check, Compass, Star, ListOrdered, BookOpen, Sparkles, ShieldCheck } from "lucide-react";
 import { tools, categories } from "@/data/tools";
 import ToolLoader from "@/components/tools/ToolLoader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -215,6 +215,43 @@ export default async function ToolPage({ params }: ToolPageProps) {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Pro Tips & Technical Details Segment */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-zinc-900 pt-8">
+        {/* Use Cases block */}
+        {tool.useCases && tool.useCases.length > 0 && (
+          <div className="glass p-6 rounded-xl border border-zinc-800/80 space-y-4">
+            <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+              <Sparkles className="h-4.5 w-4.5 text-violet-400" /> Common Use Cases & Scenarios
+            </h3>
+            <ul className="space-y-3 text-xs text-zinc-400 font-normal leading-relaxed pl-1">
+              {tool.useCases.map((useCase, idx) => (
+                <li key={idx} className="flex gap-2.5">
+                  <span className="font-mono font-bold text-zinc-650 shrink-0">•</span>
+                  <span>{useCase}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Technical Privacy & Security Block */}
+        <div className="glass p-6 rounded-xl border border-zinc-800/80 space-y-4 flex flex-col justify-between">
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+              <ShieldCheck className="h-4.5 w-4.5 text-emerald-450" /> Client-Side Privacy Shield
+            </h3>
+            <p className="text-xs text-zinc-400 leading-relaxed font-normal">
+              To ensure complete security, privacy, and speed, this tool executes 100% locally inside your browser sandbox. None of your data, uploaded file buffers, configuration parameters, or generated text results are ever transmitted to or stored on external servers.
+            </p>
+          </div>
+          <div className="pt-4 border-t border-zinc-900">
+            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 rounded px-2.5 py-1 inline-block uppercase tracking-wider font-mono">
+              100% Local Sandboxed Execution
+            </span>
+          </div>
         </div>
       </div>
 

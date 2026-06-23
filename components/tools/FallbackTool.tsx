@@ -219,6 +219,147 @@ export default function FallbackTool({ slug, category }: FallbackToolProps) {
     );
   }, [wage, hoursPerWeek, slug]);
 
+  // Profit Calculator
+  const [qtySold, setQtySold] = useState(100);
+  const [profitTaxRate, setProfitTaxRate] = useState(10);
+  const [netProfitResults, setNetProfitResults] = useState("");
+  useEffect(() => {
+    if (slug !== "profit-calculator") return;
+    const totalCost = itemCost * qtySold;
+    const totalRevenue = itemSellingPrice * qtySold;
+    const grossProfit = totalRevenue - totalCost;
+    const taxAmount = (grossProfit * profitTaxRate) / 100;
+    const netProfit = grossProfit - taxAmount;
+    const margin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
+    setNetProfitResults(
+      `Total Revenue: $${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n` +
+      `Total Cost of Goods: $${totalCost.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n` +
+      `Gross Profit: $${grossProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n` +
+      `Tax Deducted (${profitTaxRate}%): $${taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n` +
+      `Net Profit: $${netProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n` +
+      `Net Profit Margin: ${margin.toFixed(2)}%`
+    );
+  }, [itemCost, itemSellingPrice, qtySold, profitTaxRate, slug]);
+
+  // Notes Manager States
+  interface NoteItem {
+    id: string;
+    title: string;
+    tags: string;
+    content: string;
+  }
+  const [notesList, setNotesList] = useState<NoteItem[]>([]);
+  const [activeNoteId, setActiveNoteId] = useState<string>("");
+  const [noteTitle, setNoteTitle] = useState("");
+  const [noteTags, setNoteTags] = useState("");
+  const [noteContent, setNoteContent] = useState("");
+  const [noteSearch, setNoteSearch] = useState("");
+
+  // Load notes on mount
+  useEffect(() => {
+    if (slug !== "notes") return;
+    const saved = localStorage.getItem("toolbox-notes-manager");
+    if (saved) {
+      const parsed = JSON.parse(saved) as NoteItem[];
+      setNotesList(parsed);
+      if (parsed.length > 0) {
+        setActiveNoteId(parsed[0].id);
+        setNoteTitle(parsed[0].title);
+        setNoteTags(parsed[0].tags);
+        setNoteContent(parsed[0].content);
+      }
+    }
+  }, [slug]);
+
+  // Save active note changes
+  useEffect(() => {
+    if (slug !== "notes" || !activeNoteId) return;
+    const updated = notesList.map((n) =>
+      n.id === activeNoteId
+        ? { ...n, title: noteTitle, tags: noteTags, content: noteContent }
+        : n
+    );
+    const hasChanged = JSON.stringify(notesList) !== JSON.stringify(updated);
+    if (hasChanged) {
+      setNotesList(updated);
+      localStorage.setItem("toolbox-notes-manager", JSON.stringify(updated));
+    }
+  }, [noteTitle, noteTags, noteContent, activeNoteId, slug]);
+
+  const createNewNote = () => {
+    const newNote: NoteItem = {
+      id: Date.now().toString(),
+      title: "Untitled Note",
+      tags: "general",
+      content: "",
+    };
+    const updated = [newNote, ...notesList];
+    setNotesList(updated);
+    localStorage.setItem("toolbox-notes-manager", JSON.stringify(updated));
+    setActiveNoteId(newNote.id);
+    setNoteTitle(newNote.title);
+    setNoteTags(newNote.tags);
+    setNoteContent(newNote.content);
+  };
+
+  const deleteNote = (id: string) => {
+    const updated = notesList.filter((n) => n.id !== id);
+    setNotesList(updated);
+    localStorage.setItem("toolbox-notes-manager", JSON.stringify(updated));
+    if (activeNoteId === id) {
+      if (updated.length > 0) {
+        setActiveNoteId(updated[0].id);
+        setNoteTitle(updated[0].title);
+        setNoteTags(updated[0].tags);
+        setNoteContent(updated[0].content);
+      } else {
+        setActiveNoteId("");
+        setNoteTitle("");
+        setNoteTags("");
+        setNoteContent("");
+      }
+    }
+  };
+
+  const selectNote = (note: NoteItem) => {
+    setActiveNoteId(note.id);
+    setNoteTitle(note.title);
+    setNoteTags(note.tags);
+    setNoteContent(note.content);
+  };
+
+  // Meeting Notes States
+  const [meetTitle, setMeetTitle] = useState("Team Weekly Sync");
+  const [meetDate, setMeetDate] = useState("");
+  const [meetAttendees, setMeetAttendees] = useState("Alice, Bob, Charlie");
+  const [meetAgenda, setMeetAgenda] = useState("- Review project roadmap\n- Discuss frontend layout design updates");
+  const [meetDecisions, setMeetDecisions] = useState("- Removed persistent left SaaS sidebar\n- Decided to use full-width premium layouts");
+  const [meetActions, setMeetActions] = useState("- Alice to verify responsive mobile menu\n- Bob to complete testing of all 67 tools");
+  const [meetMarkdown, setMeetMarkdown] = useState("");
+
+  useEffect(() => {
+    const today = new Date().toISOString().substring(0, 10);
+    setMeetDate(today);
+  }, []);
+
+  useEffect(() => {
+    if (slug !== "meeting-notes") return;
+    const md = `# Meeting Notes: ${meetTitle}
+Date: ${meetDate}
+Attendees: ${meetAttendees}
+
+## Agenda
+${meetAgenda}
+
+## Key Decisions
+${meetDecisions}
+
+## Action Items
+${meetActions}
+`;
+    setMeetMarkdown(md);
+  }, [meetTitle, meetDate, meetAttendees, meetAgenda, meetDecisions, meetActions, slug]);
+
   // ==========================================
   // 2. TEXT TOOLS CATEGORY HANDLERS
   // ==========================================
@@ -257,6 +398,21 @@ export default function FallbackTool({ slug, category }: FallbackToolProps) {
     const unique = Array.from(new Set(list));
     setTextOutput(unique.join("\n"));
   };
+
+  // Character Counter Live Output
+  useEffect(() => {
+    if (slug !== "character-counter") return;
+    const charCount = textInput.length;
+    const charNoSpaces = textInput.replace(/\s/g, "").length;
+    const words = textInput.trim() ? textInput.trim().split(/\s+/).length : 0;
+    const lines = textInput ? textInput.split("\n").length : 0;
+    setTextOutput(
+      `Character Count (with spaces): ${charCount}\n` +
+      `Character Count (without spaces): ${charNoSpaces}\n` +
+      `Word Count: ${words}\n` +
+      `Line Count: ${lines}`
+    );
+  }, [textInput, slug]);
 
   // Notepad autosave
   useEffect(() => {
@@ -696,11 +852,12 @@ export default function FallbackTool({ slug, category }: FallbackToolProps) {
   }
 
   // --- F. PROFIT MARGIN & BUSINESS ROI ---
-  if (slug === "profit-margin-calculator" || slug === "roi-calculator" || slug === "break-even-calculator" || slug === "salary-calculator" || slug === "compound-interest-calculator") {
+  if (slug === "profit-margin-calculator" || slug === "profit-calculator" || slug === "roi-calculator" || slug === "break-even-calculator" || slug === "salary-calculator" || slug === "compound-interest-calculator") {
     const isRoi = slug === "roi-calculator";
     const isBreak = slug === "break-even-calculator";
     const isSalary = slug === "salary-calculator";
     const isCompound = slug === "compound-interest-calculator";
+    const isProfit = slug === "profit-calculator";
 
     return (
       <div className="space-y-6">
@@ -712,6 +869,13 @@ export default function FallbackTool({ slug, category }: FallbackToolProps) {
               <>
                 <Input label="Initial Investment Cost ($)" type="number" value={roiInvest} onChange={(e) => setRoiInvest(Number(e.target.value))} />
                 <Input label="Final Value/Returns ($)" type="number" value={roiReturn} onChange={(e) => setRoiReturn(Number(e.target.value))} />
+              </>
+            ) : isProfit ? (
+              <>
+                <Input label="Item Cost Price ($)" type="number" value={itemCost} onChange={(e) => setItemCost(Number(e.target.value))} />
+                <Input label="Selling Price ($)" type="number" value={itemSellingPrice} onChange={(e) => setItemSellingPrice(Number(e.target.value))} />
+                <Input label="Quantity Sold" type="number" value={qtySold} onChange={(e) => setQtySold(Number(e.target.value))} />
+                <Input label="Tax Rate (%)" type="number" value={profitTaxRate} onChange={(e) => setProfitTaxRate(Number(e.target.value))} />
               </>
             ) : isBreak ? (
               <>
@@ -741,7 +905,7 @@ export default function FallbackTool({ slug, category }: FallbackToolProps) {
           <div className="p-4 rounded-lg bg-zinc-950/60 border border-zinc-850 flex flex-col justify-center">
             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-2">Calculated Margin Report</span>
             <div className="text-sm font-mono text-zinc-300 leading-relaxed whitespace-pre-wrap font-semibold">
-              {isRoi ? roiResults : isBreak ? breakEvenResults : isSalary ? salaryResults : isCompound ? compoundResults : marginResults}
+              {isRoi ? roiResults : isProfit ? netProfitResults : isBreak ? breakEvenResults : isSalary ? salaryResults : isCompound ? compoundResults : marginResults}
             </div>
           </div>
         </div>
@@ -1087,6 +1251,228 @@ export default function FallbackTool({ slug, category }: FallbackToolProps) {
         ) : (
           <p className="text-xs text-zinc-500 py-6 text-center border border-dashed border-zinc-800 rounded-xl">Shopping list is empty.</p>
         )}
+      </div>
+    );
+  }
+
+  // Notes Manager
+  if (slug === "notes") {
+    const filteredNotes = notesList.filter((n) =>
+      n.title.toLowerCase().includes(noteSearch.toLowerCase()) ||
+      n.tags.toLowerCase().includes(noteSearch.toLowerCase())
+    );
+    const activeNote = notesList.find((n) => n.id === activeNoteId);
+
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          {/* Sidebar: Notes List */}
+          <div className="md:col-span-1 border border-zinc-800 bg-zinc-950/40 rounded-xl p-4 space-y-4">
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">My Notes</span>
+              <Button size="sm" variant="primary" onClick={createNewNote} leftIcon={<Plus className="h-3.5 w-3.5" />}>
+                Add Note
+              </Button>
+            </div>
+            
+            <Input
+              placeholder="Search title or tags..."
+              value={noteSearch}
+              onChange={(e) => setNoteSearch(e.target.value)}
+              className="h-8 text-xs"
+            />
+
+            <div className="space-y-1.5 max-h-[300px] overflow-y-auto scrollbar-custom pr-1">
+              {filteredNotes.length > 0 ? (
+                filteredNotes.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => selectNote(n)}
+                    className={`p-3 rounded-lg border text-left cursor-pointer flex items-center justify-between transition-all duration-200 ${
+                      n.id === activeNoteId
+                        ? "bg-violet-600/10 border-violet-500 text-violet-400"
+                        : "bg-zinc-900/20 border-zinc-850 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40"
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1 mr-2">
+                      <span className="text-xs font-bold truncate block">{n.title || "Untitled Note"}</span>
+                      <span className="text-[10px] text-zinc-500 font-medium block truncate">#{n.tags || "general"}</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteNote(n.id);
+                      }}
+                      className="text-zinc-650 hover:text-red-400 p-1 rounded hover:bg-zinc-900 transition-all duration-200 shrink-0"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-[11px] text-zinc-600 text-center py-6 select-none">No notes created yet</p>
+              )}
+            </div>
+          </div>
+
+          {/* Note Editor */}
+          <div className="md:col-span-2 border border-zinc-800 bg-zinc-900/20 glass rounded-xl p-5 space-y-4">
+            {activeNote ? (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Note Title"
+                    value={noteTitle}
+                    onChange={(e) => setNoteTitle(e.target.value)}
+                    placeholder="Title..."
+                  />
+                  <Input
+                    label="Tags"
+                    value={noteTags}
+                    onChange={(e) => setNoteTags(e.target.value)}
+                    placeholder="general, ideas..."
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest block">Note Text</label>
+                  <textarea
+                    value={noteContent}
+                    onChange={(e) => setNoteContent(e.target.value)}
+                    placeholder="Type note content here..."
+                    className="w-full h-[250px] font-mono text-xs bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-violet-500 transition-all duration-200 resize-none outline-none"
+                  ></textarea>
+                </div>
+
+                <div className="flex justify-end gap-2.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCopyText(noteContent)}
+                    leftIcon={copied ? <CheckCircle className="h-3.5 w-3.5 text-emerald-450" /> : <Copy className="h-3.5 w-3.5" />}
+                  >
+                    {copied ? "Copied" : "Copy Note"}
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => {
+                      const element = document.createElement("a");
+                      const file = new Blob([noteContent], { type: "text/plain" });
+                      element.href = URL.createObjectURL(file);
+                      element.download = `${noteTitle.toLowerCase().replace(/\s+/g, "-") || "note"}.txt`;
+                      document.body.appendChild(element);
+                      element.click();
+                      document.body.removeChild(element);
+                    }}
+                    leftIcon={<Download className="h-3.5 w-3.5" />}
+                  >
+                    Download File
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="h-[300px] flex flex-col items-center justify-center text-center text-zinc-500 space-y-2">
+                <FileText className="h-10 w-10 text-zinc-700" />
+                <h4 className="text-sm font-bold text-zinc-300">No Note Selected</h4>
+                <p className="text-xs text-zinc-500 max-w-xs leading-relaxed">
+                  Select a note from the list or click "Add Note" to start.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Meeting Notes
+  if (slug === "meeting-notes") {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Fields Column */}
+          <div className="border border-zinc-800 bg-zinc-900/35 glass rounded-xl p-5 space-y-4">
+            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-zinc-900">
+              <FileText className="h-4.5 w-4.5 text-violet-400" /> Details & Agendas
+            </h4>
+            
+            <div className="grid grid-cols-2 gap-4">
+               <Input label="Meeting Title" value={meetTitle} onChange={(e) => setMeetTitle(e.target.value)} />
+               <Input label="Meeting Date" type="date" value={meetDate} onChange={(e) => setMeetDate(e.target.value)} />
+            </div>
+
+            <Input label="Attendees" value={meetAttendees} onChange={(e) => setMeetAttendees(e.target.value)} placeholder="Attendees names..." />
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest block">Agendas List</label>
+              <textarea
+                value={meetAgenda}
+                onChange={(e) => setMeetAgenda(e.target.value)}
+                className="w-full h-20 font-mono text-xs bg-zinc-900/60 border border-zinc-800 rounded-lg p-2.5 text-zinc-300 focus:outline-none focus:border-violet-500 outline-none resize-none"
+              ></textarea>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest block">Key Decisions</label>
+              <textarea
+                value={meetDecisions}
+                onChange={(e) => setMeetDecisions(e.target.value)}
+                className="w-full h-20 font-mono text-xs bg-zinc-900/60 border border-zinc-800 rounded-lg p-2.5 text-zinc-300 focus:outline-none focus:border-violet-500 outline-none resize-none"
+              ></textarea>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest block">Action Items Checklist</label>
+              <textarea
+                value={meetActions}
+                onChange={(e) => setMeetActions(e.target.value)}
+                className="w-full h-20 font-mono text-xs bg-zinc-900/60 border border-zinc-800 rounded-lg p-2.5 text-zinc-300 focus:outline-none focus:border-violet-500 outline-none resize-none"
+              ></textarea>
+            </div>
+          </div>
+
+          {/* Markdown Preview Column */}
+          <div className="border border-zinc-800 bg-zinc-950/40 rounded-xl p-5 space-y-4 flex flex-col justify-between">
+            <div className="space-y-3 flex-1 flex flex-col">
+              <div className="flex justify-between items-center px-1">
+                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Code className="h-4.5 w-4.5 text-emerald-400" /> Compiled Markdown
+                </span>
+                <button
+                  onClick={() => handleCopyText(meetMarkdown)}
+                  className="text-xs text-zinc-500 hover:text-violet-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  {copied ? <CheckCircle className="h-3.5 w-3.5 text-emerald-450" /> : <Copy className="h-3.5 w-3.5" />}
+                  <span>{copied ? "Copied" : "Copy Markdown"}</span>
+                </button>
+              </div>
+              <textarea
+                readOnly
+                value={meetMarkdown}
+                className="w-full flex-1 min-h-[350px] font-mono text-xs bg-zinc-900/30 border border-zinc-850 rounded-xl p-4 text-zinc-300 outline-none resize-none"
+              ></textarea>
+            </div>
+
+            <div className="pt-4 border-t border-zinc-900 flex justify-end">
+               <Button
+                 variant="primary"
+                 onClick={() => {
+                   const element = document.createElement("a");
+                   const file = new Blob([meetMarkdown], { type: "text/markdown" });
+                   element.href = URL.createObjectURL(file);
+                   element.download = `${meetTitle.toLowerCase().replace(/\s+/g, "-") || "meeting-notes"}.md`;
+                   document.body.appendChild(element);
+                   element.click();
+                   document.body.removeChild(element);
+                 }}
+                 leftIcon={<Download className="h-4 w-4" />}
+               >
+                 Export Markdown
+               </Button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
