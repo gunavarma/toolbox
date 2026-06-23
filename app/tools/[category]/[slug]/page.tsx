@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Check, Compass, Star, ListOrdered, BookOpen } from "lucide-react";
 import { tools, categories } from "@/data/tools";
-import { toolComponents } from "@/components/tools/registry";
-import FallbackTool from "@/components/tools/FallbackTool";
+import ToolLoader from "@/components/tools/ToolLoader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ToolHeader } from "@/components/tools/ToolHeader";
 import { ToolFaq } from "@/components/tools/ToolFaq";
@@ -63,8 +62,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     notFound();
   }
 
-  // Load custom coded component or fall back to the smart utility component
-  const ActiveTool = toolComponents[tool.componentName] || FallbackTool;
+
 
   // Filter related tools in same category, excluding the active one
   const relatedTools = tools
@@ -157,8 +155,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
         <div className="lg:col-span-2 space-y-8">
           <Card className="p-6">
             <CardContent className="p-0">
-              {/* Dynamic import load */}
-              <ActiveTool slug={tool.slug} category={tool.category} />
+              {/* Client-side dynamic loader */}
+              <ToolLoader componentName={tool.componentName} slug={tool.slug} category={tool.category} />
             </CardContent>
           </Card>
 
