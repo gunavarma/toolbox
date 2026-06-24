@@ -24,21 +24,21 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]";
+      "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98] select-none cursor-pointer";
 
     const variants = {
-      primary: "bg-violet-600 text-zinc-50 hover:bg-violet-500 hover:shadow-[0_0_15px_rgba(139,92,246,0.4)]",
-      secondary: "bg-zinc-800 text-zinc-100 hover:bg-zinc-700 hover:text-zinc-50 border border-zinc-700/50",
-      outline: "bg-transparent border border-zinc-700/80 text-zinc-300 hover:border-zinc-500 hover:text-zinc-100",
-      ghost: "bg-transparent text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-100",
-      danger: "bg-red-600/90 text-zinc-50 hover:bg-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]",
-      glass: "glass text-zinc-100 hover:bg-zinc-900/80 hover:border-violet-500/40 hover:shadow-[0_0_15px_rgba(139,92,246,0.1)]",
+      primary: "bg-primary text-white hover:bg-primary-hover hover:shadow-glow",
+      secondary: "bg-bg-secondary text-zinc-100 hover:bg-bg-secondary/80 border border-border-primary/60",
+      outline: "bg-transparent border border-border-primary text-zinc-300 hover:border-primary/40 hover:bg-bg-secondary",
+      ghost: "bg-transparent text-zinc-400 hover:bg-bg-secondary hover:text-zinc-100",
+      danger: "bg-red-600/90 text-white hover:bg-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]",
+      glass: "glass text-zinc-100 hover:bg-bg-secondary/80 hover:border-primary/40 hover:shadow-glow",
     };
 
     const sizes = {
-      sm: "h-8 px-3 text-xs gap-1.5",
-      md: "h-10 px-4 text-sm gap-2",
-      lg: "h-12 px-6 text-base gap-2.5",
+      sm: "h-8.5 px-3.5 text-xs gap-1.5 rounded-lg",
+      md: "h-10 px-4.5 text-sm gap-2",
+      lg: "h-12 px-6.5 text-base gap-2.5 rounded-2xl",
       icon: "h-10 w-10 p-0",
     };
 

@@ -1,40 +1,85 @@
 @import "tailwindcss";
 
-@theme {
-  --color-bg-primary: #030303;
-  --color-bg-secondary: #0a0a0c;
-  --color-bg-tertiary: #121215;
-  
-  --color-border-primary: rgba(39, 39, 42, 0.6);
-  --color-border-hover: rgba(63, 63, 70, 0.8);
-  --color-border-active: rgba(161, 161, 170, 0.5);
-  
-  --color-accent-purple: #8b5cf6;
-  --color-accent-indigo: #6366f1;
-  --color-accent-pink: #ec4899;
-  
-  --animate-spotlight: spotlight 2s ease-in-out infinite alternate;
-  --animate-float: float 6s ease-in-out infinite;
-  
-  --shadow-premium: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.15);
-}
-
 :root {
-  --background: #030303;
-  --foreground: #f4f4f5;
-  --accent-color: #8b5cf6;
+  --background: #FFFFFF;
+  --surface: #FAFAFA;
+  --card: #FFFFFF;
+  --border: #E5E7EB;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --text-primary-subtle: #374151;
+  --primary: #2563EB;
+  --primary-light: #3B82F6;
+  --primary-dark: #1D4ED8;
+  --primary-deep: #1E40AF;
+  
+  --scrollbar-track: #F9FAFB;
+  --scrollbar-thumb: #E5E7EB;
+  --scrollbar-thumb-hover: #D1D5DB;
+
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
+.dark {
+  --background: #0A0A0A;
+  --surface: #111111;
+  --card: #18181B;
+  --border: #27272A;
+  --text-primary: #F4F4F5;
+  --text-secondary: #A1A1AA;
+  --text-primary-subtle: #E4E4E7;
+  --primary: #3B82F6;
+  --primary-light: #60A5FA;
+  --primary-dark: #2563EB;
+  --primary-deep: #1D4ED8;
+
+  --scrollbar-track: #050507;
+  --scrollbar-thumb: #1E1E24;
+  --scrollbar-thumb-hover: #2D2D39;
+}
+
+@theme {
+  --color-bg-primary: var(--background);
+  --color-bg-secondary: var(--surface);
+  --color-bg-card: var(--card);
+  --color-border-primary: var(--border);
+  --color-text-main: var(--text-primary);
+  --color-text-muted: var(--text-secondary);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-dark);
+  
+  /* Map standard colors dynamically to avoid visual breakage across 67 tools */
+  --color-zinc-50: var(--text-primary);
+  --color-zinc-100: var(--text-primary);
+  --color-zinc-200: var(--text-primary-subtle);
+  --color-zinc-300: var(--text-secondary);
+  --color-zinc-400: var(--text-secondary);
+  --color-zinc-500: var(--text-secondary);
+  --color-zinc-800: var(--border);
+  --color-zinc-900: var(--surface);
+  --color-zinc-950: var(--background);
+  
+  --color-violet-400: var(--primary-light);
+  --color-violet-500: var(--primary);
+  --color-violet-600: var(--primary-dark);
+  --color-violet-700: var(--primary-deep);
+  
+  --animate-spotlight: spotlight 2s ease-in-out infinite alternate;
+  --animate-float: float 6s ease-in-out infinite;
+  
+  --shadow-premium: 0 4px 30px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.1);
+}
+
 body {
   background: var(--background);
-  color: var(--foreground);
+  color: var(--text-primary);
   font-family: var(--font-sans);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Custom Scrollbars */
@@ -44,24 +89,24 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #050507;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e1e24;
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2d2d39;
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Custom Utilities */
 .glass {
-  background: rgba(10, 10, 12, 0.7);
+  background: var(--surface);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(39, 39, 42, 0.6);
+  border: 1px solid var(--border);
 }
 
 .glass-hover {
@@ -69,27 +114,36 @@ body {
 }
 
 .glass-hover:hover {
-  background: rgba(18, 18, 22, 0.85);
-  border-color: rgba(139, 92, 246, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(139, 92, 246, 0.05);
+  background: var(--surface);
+  border-color: var(--primary);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.03), 0 0 15px rgba(37, 99, 235, 0.05);
   transform: translateY(-2px);
 }
 
+.dark .glass-hover:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px rgba(59, 130, 246, 0.1);
+}
+
 .glass-card {
-  background: rgba(10, 10, 12, 0.45);
+  background: var(--card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(39, 39, 42, 0.5);
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-premium);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.dark .glass-card {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
 }
 
 .glow-text {
-  text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  text-shadow: 0 0 20px var(--primary);
 }
 
 .glow-border {
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 15px var(--primary);
 }
 
 /* Keyframes */
@@ -110,4 +164,37 @@ input::-webkit-inner-spin-button {
 }
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+/* Global utility input selector adaptations for all tools in light/dark mode */
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"],
+input[type="search"],
+textarea,
+select {
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+input[type="text"]::placeholder,
+input[type="search"]::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 0.6;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary) !important;
+  --tw-ring-color: var(--primary) !important;
+  box-shadow: 0 0 0 1px var(--primary) !important;
 }

@@ -11,8 +11,8 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={`glass-card ${glow ? "glow-border" : ""} ${
-          hoverEffect ? "glass-hover" : ""
-        } overflow-hidden ${className}`}
+          hoverEffect ? "glass-hover cursor-pointer" : ""
+        } overflow-hidden rounded-2xl ${className}`}
         {...props}
       >
         {children}
@@ -26,7 +26,7 @@ export const CardHeader = ({
   className = "",
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={`flex flex-col space-y-1.5 p-6 border-b border-zinc-900/60 ${className}`} {...props} />
+  <div className={`flex flex-col space-y-1.5 p-6 border-b border-border-primary/40 ${className}`} {...props} />
 );
 CardHeader.displayName = "CardHeader";
 
@@ -35,7 +35,7 @@ export const CardTitle = ({
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) => (
   <h3
-    className={`text-lg font-semibold leading-none tracking-tight text-zinc-50 ${className}`}
+    className={`text-lg font-bold leading-none tracking-tight text-zinc-50 ${className}`}
     {...props}
   />
 );
@@ -61,6 +61,6 @@ export const CardFooter = ({
   className = "",
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={`flex items-center p-6 pt-0 border-t border-zinc-900/60 ${className}`} {...props} />
+  <div className={`flex items-center p-6 pt-0 border-t border-border-primary/40 ${className}`} {...props} />
 );
 CardFooter.displayName = "CardFooter";

@@ -6,6 +6,7 @@ interface UIState {
   isSidebarCollapsed: boolean;
   recentTools: string[];
   favorites: string[];
+  theme: "light" | "dark";
   
   openCommandPalette: () => void;
   closeCommandPalette: () => void;
@@ -14,6 +15,8 @@ interface UIState {
   setSidebarCollapsed: (collapsed: boolean) => void;
   addRecentTool: (slug: string) => void;
   toggleFavorite: (slug: string) => void;
+  toggleTheme: () => void;
+  setTheme: (theme: "light" | "dark") => void;
 }
 
 export const useStore = create<UIState>()(
@@ -23,6 +26,7 @@ export const useStore = create<UIState>()(
       isSidebarCollapsed: false,
       recentTools: [],
       favorites: [],
+      theme: "dark",
 
       openCommandPalette: () => set({ isCommandPaletteOpen: true }),
       closeCommandPalette: () => set({ isCommandPaletteOpen: false }),
@@ -47,6 +51,36 @@ export const useStore = create<UIState>()(
               : [...state.favorites, slug],
           };
         }),
+
+      toggleTheme: () =>
+        set((state) => {
+          const next = state.theme === "dark" ? "light" : "dark";
+          if (typeof window !== "undefined") {
+            localStorage.setItem("toolbox-theme", next);
+            if (next === "dark") {
+              document.documentElement.classList.add("dark");
+              document.documentElement.style.colorScheme = "dark";
+            } else {
+              document.documentElement.classList.remove("dark");
+              document.documentElement.style.colorScheme = "light";
+            }
+          }
+          return { theme: next };
+        }),
+
+      setTheme: (theme) => {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("toolbox-theme", theme);
+          if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+            document.documentElement.style.colorScheme = "dark";
+          } else {
+            document.documentElement.classList.remove("dark");
+            document.documentElement.style.colorScheme = "light";
+          }
+        }
+        set({ theme });
+      },
     }),
     {
       name: "toolbox-ui-state",
@@ -54,6 +88,7 @@ export const useStore = create<UIState>()(
         isSidebarCollapsed: state.isSidebarCollapsed,
         recentTools: state.recentTools,
         favorites: state.favorites,
+        theme: state.theme,
       }),
     }
   )
