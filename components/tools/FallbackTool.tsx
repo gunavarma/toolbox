@@ -46,7 +46,7 @@ export default function FallbackTool({ slug, category }: FallbackToolProps) {
   // ==========================================
   // 1. CALCULATORS CATEGORY HANDLERS
   // ==========================================
-  
+
   // Age Calculator
   const [birthdate, setBirthdate] = useState("1995-05-15");
   const [ageResults, setAgeResults] = useState("");
@@ -54,7 +54,7 @@ export default function FallbackTool({ slug, category }: FallbackToolProps) {
     if (slug !== "age-calculator" || !birthdate) return;
     const birth = new Date(birthdate);
     const today = new Date();
-    
+
     let years = today.getFullYear() - birth.getFullYear();
     let months = today.getMonth() - birth.getMonth();
     let days = today.getDate() - birth.getDate();
@@ -572,7 +572,7 @@ ${meetActions}
   // ==========================================
 
   // QR Code generator
-  const [qrText, setQrText] = useState("https://toolbox.example.com");
+  const [qrText, setQrText] = useState("https://toolxbox.vercel.app");
   const [qrUrl, setQrUrl] = useState("");
   useEffect(() => {
     if (slug !== "qr-code-generator") return;
@@ -812,13 +812,12 @@ ${meetActions}
                   <button
                     key={k}
                     onClick={() => handleSciKey(k)}
-                    className={`h-11 rounded-lg text-xs font-semibold font-mono border transition-all duration-150 cursor-pointer ${
-                      k === "="
+                    className={`h-11 rounded-lg text-xs font-semibold font-mono border transition-all duration-150 cursor-pointer ${k === "="
                         ? "bg-violet-600 border-violet-500 text-zinc-50 hover:bg-violet-500"
                         : k === "C"
-                        ? "bg-red-950/30 border-red-900/40 text-red-400 hover:bg-red-900/40"
-                        : "bg-zinc-900 border-zinc-800 hover:bg-zinc-850 text-zinc-300"
-                    }`}
+                          ? "bg-red-950/30 border-red-900/40 text-red-400 hover:bg-red-900/40"
+                          : "bg-zinc-900 border-zinc-800 hover:bg-zinc-850 text-zinc-300"
+                      }`}
                   >
                     {k}
                   </button>
@@ -864,7 +863,7 @@ ${meetActions}
         <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <h4 className="text-sm font-bold text-zinc-300 flex items-center gap-1.5"><DollarSign className="h-4.5 w-4.5 text-violet-400" /> Inputs</h4>
-            
+
             {isRoi ? (
               <>
                 <Input label="Initial Investment Cost ($)" type="number" value={roiInvest} onChange={(e) => setRoiInvest(Number(e.target.value))} />
@@ -922,12 +921,12 @@ ${meetActions}
     return (
       <div className="space-y-6">
         <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/35 glass grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          
+
           {/* Display panel */}
           <div className="w-full h-36 bg-zinc-950 rounded-lg border border-zinc-850 flex flex-col items-center justify-center text-center relative">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-20 w-20 rounded-full bg-violet-600/5 blur-xl pointer-events-none"></div>
             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1 z-10">Time HUD</span>
-            
+
             {isCount ? (
               <div className="text-3xl font-mono text-zinc-150 font-bold z-10">
                 {countdownMinutes.toString().padStart(2, "0")}:{countdownSeconds.toString().padStart(2, "0")}
@@ -1052,7 +1051,7 @@ ${meetActions}
 
         {/* Action button rows depending on slug */}
         <div className="glass p-4 rounded-xl border border-zinc-800/80 flex flex-wrap gap-2.5 items-center justify-between">
-          
+
           {isRand && (
             <div className="flex gap-2 w-full sm:max-w-md">
               <Input label="Min" type="number" value={minBound} onChange={(e) => setMinBound(Number(e.target.value))} />
@@ -1097,7 +1096,7 @@ ${meetActions}
             {isMini && <Button variant="primary" onClick={handleMinify}>Minify Code</Button>}
             {isJsonVal && <Button variant="primary" onClick={handleValidateJson}>Lint & Validate</Button>}
             {isAi && <Button variant="primary" onClick={handleAiGen} leftIcon={<Sparkles className="h-4 w-4" />}>AI Heuristics Generate</Button>}
-            
+
             <Button variant="ghost" onClick={handleClear}>Clear</Button>
           </div>
         </div>
@@ -1143,7 +1142,7 @@ ${meetActions}
   }
 
   // --- J. PRODUCTIVITY TOOLS (QR, Habit Tracker, Grocery Checklist) ---
-  
+
   // QR Code generator
   if (slug === "qr-code-generator") {
     return (
@@ -1191,11 +1190,10 @@ ${meetActions}
                     <button
                       key={dIdx}
                       onClick={() => toggleHabitDay(habit.id, dIdx)}
-                      className={`h-7 w-7 rounded border text-[10px] font-bold transition-all duration-150 cursor-pointer ${
-                        habit.days[dIdx]
+                      className={`h-7 w-7 rounded border text-[10px] font-bold transition-all duration-150 cursor-pointer ${habit.days[dIdx]
                           ? "bg-violet-600/20 border-violet-500 text-violet-400 font-extrabold"
                           : "bg-zinc-900 border-zinc-800 text-zinc-500"
-                      }`}
+                        }`}
                     >
                       D{dIdx + 1}
                     </button>
@@ -1224,7 +1222,7 @@ ${meetActions}
             <Button variant="primary" onClick={addGroceryItem}><Plus className="h-4 w-4" /></Button>
           </div>
         </div>
-        
+
         {groceryItems.length > 0 ? (
           <div className="space-y-2">
             {groceryItems.map((item) => (
@@ -1274,7 +1272,7 @@ ${meetActions}
                 Add Note
               </Button>
             </div>
-            
+
             <Input
               placeholder="Search title or tags..."
               value={noteSearch}
@@ -1288,11 +1286,10 @@ ${meetActions}
                   <div
                     key={n.id}
                     onClick={() => selectNote(n)}
-                    className={`p-3 rounded-lg border text-left cursor-pointer flex items-center justify-between transition-all duration-200 ${
-                      n.id === activeNoteId
+                    className={`p-3 rounded-lg border text-left cursor-pointer flex items-center justify-between transition-all duration-200 ${n.id === activeNoteId
                         ? "bg-violet-600/10 border-violet-500 text-violet-400"
                         : "bg-zinc-900/20 border-zinc-850 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40"
-                    }`}
+                      }`}
                   >
                     <div className="min-w-0 flex-1 mr-2">
                       <span className="text-xs font-bold truncate block">{n.title || "Untitled Note"}</span>
@@ -1396,10 +1393,10 @@ ${meetActions}
             <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-zinc-900">
               <FileText className="h-4.5 w-4.5 text-violet-400" /> Details & Agendas
             </h4>
-            
+
             <div className="grid grid-cols-2 gap-4">
-               <Input label="Meeting Title" value={meetTitle} onChange={(e) => setMeetTitle(e.target.value)} />
-               <Input label="Meeting Date" type="date" value={meetDate} onChange={(e) => setMeetDate(e.target.value)} />
+              <Input label="Meeting Title" value={meetTitle} onChange={(e) => setMeetTitle(e.target.value)} />
+              <Input label="Meeting Date" type="date" value={meetDate} onChange={(e) => setMeetDate(e.target.value)} />
             </div>
 
             <Input label="Attendees" value={meetAttendees} onChange={(e) => setMeetAttendees(e.target.value)} placeholder="Attendees names..." />
@@ -1455,21 +1452,21 @@ ${meetActions}
             </div>
 
             <div className="pt-4 border-t border-zinc-900 flex justify-end">
-               <Button
-                 variant="primary"
-                 onClick={() => {
-                   const element = document.createElement("a");
-                   const file = new Blob([meetMarkdown], { type: "text/markdown" });
-                   element.href = URL.createObjectURL(file);
-                   element.download = `${meetTitle.toLowerCase().replace(/\s+/g, "-") || "meeting-notes"}.md`;
-                   document.body.appendChild(element);
-                   element.click();
-                   document.body.removeChild(element);
-                 }}
-                 leftIcon={<Download className="h-4 w-4" />}
-               >
-                 Export Markdown
-               </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  const element = document.createElement("a");
+                  const file = new Blob([meetMarkdown], { type: "text/markdown" });
+                  element.href = URL.createObjectURL(file);
+                  element.download = `${meetTitle.toLowerCase().replace(/\s+/g, "-") || "meeting-notes"}.md`;
+                  document.body.appendChild(element);
+                  element.click();
+                  document.body.removeChild(element);
+                }}
+                leftIcon={<Download className="h-4 w-4" />}
+              >
+                Export Markdown
+              </Button>
             </div>
           </div>
         </div>

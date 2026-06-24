@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { tools, categories } from "@/data/tools";
 import { blogPosts } from "@/data/blog";
 
-const BASE_URL = "https://toolbox.example.com";
+const BASE_URL = "https://toolxbox.vercel.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes = [

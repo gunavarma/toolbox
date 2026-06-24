@@ -29,14 +29,14 @@ export const metadata: Metadata = {
   },
   description: "Access 50+ professional browser-based utility tools for developers, calculators, screen testing, text formatting, and business planning.",
   keywords: ["developer tools", "online calculators", "screen test", "json formatter", "password generator", "invoice generator", "utility tools"],
-  metadataBase: new URL("https://toolbox.example.com"),
+  metadataBase: new URL("https://toolxbox.vercel.app"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Toolbox - Everything You Need. One Platform.",
     description: "50+ premium productivity, calculations, development, and daily workflow utility tools built entirely in the browser.",
-    url: "https://toolbox.example.com",
+    url: "https://toolxbox.vercel.app",
     siteName: "Toolbox",
     locale: "en_US",
     type: "website",
@@ -106,7 +106,7 @@ export default function RootLayout({
             <div className="flex-1">
               {children}
             </div>
-            
+
             {/* Styled footer */}
             <Footer />
           </main>

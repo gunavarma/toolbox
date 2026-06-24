@@ -35,10 +35,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = blogPosts.find((p) => p.slug === slug);
-  
+
   if (!post) return {};
 
-  const fullUrl = `https://toolbox.example.com/blog/${post.slug}`;
+  const fullUrl = `https://toolxbox.vercel.app/blog/${post.slug}`;
 
   return {
     title: `${post.title} | Toolbox Journal`,
@@ -80,19 +80,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://toolbox.example.com"
+        "item": "https://toolxbox.vercel.app"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Blog",
-        "item": "https://toolbox.example.com/blog"
+        "item": "https://toolxbox.vercel.app/blog"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": post.title,
-        "item": `https://toolbox.example.com/blog/${post.slug}`
+        "item": `https://toolxbox.vercel.app/blog/${post.slug}`
       }
     ]
   };
@@ -112,10 +112,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       "name": "Toolbox Platform",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://toolbox.example.com/favicon.ico"
+        "url": "https://toolxbox.vercel.app/favicon.ico"
       }
     },
-    "mainEntityOfPage": `https://toolbox.example.com/blog/${post.slug}`
+    "mainEntityOfPage": `https://toolxbox.vercel.app/blog/${post.slug}`
   };
 
   const faqSchema = post.faqs.length > 0 ? {
@@ -170,7 +170,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-zinc-50 leading-tight">
                 {post.title}
               </h1>
-              
+
               <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-500 pt-1">
                 <span className="flex items-center gap-1.5 font-semibold">
                   <User className="h-4 w-4 text-zinc-650" /> {post.author}

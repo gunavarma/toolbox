@@ -28,10 +28,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: ToolPageProps): Promise<Metadata> {
   const { slug } = await params;
   const tool = tools.find((t) => t.slug === slug);
-  
+
   if (!tool) return {};
 
-  const fullUrl = `https://toolbox.example.com/tools/${tool.category}/${tool.slug}`;
+  const fullUrl = `https://toolxbox.vercel.app/tools/${tool.category}/${tool.slug}`;
 
   return {
     title: tool.seoTitle,
@@ -103,19 +103,19 @@ export default async function ToolPage({ params }: ToolPageProps) {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://toolbox.example.com"
+        "item": "https://toolxbox.vercel.app"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": category.name,
-        "item": `https://toolbox.example.com/tools/${category.slug}`
+        "item": `https://toolxbox.vercel.app/tools/${category.slug}`
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": tool.name,
-        "item": `https://toolbox.example.com/tools/${category.slug}/${tool.slug}`
+        "item": `https://toolxbox.vercel.app/tools/${category.slug}/${tool.slug}`
       }
     ]
   };
@@ -124,7 +124,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": tool.name,
-    "url": `https://toolbox.example.com/tools/${category.slug}/${tool.slug}`,
+    "url": `https://toolxbox.vercel.app/tools/${category.slug}/${tool.slug}`,
     "description": tool.description,
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "All",
@@ -288,7 +288,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
             Read our in-depth reference documentation and technical architecture details for the {tool.name} utility below.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {seoSections.map((sec, idx) => (
             <div key={idx} className="space-y-2">
