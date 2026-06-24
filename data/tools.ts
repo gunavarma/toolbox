@@ -26,7 +26,7 @@ export interface CategoryItem {
   icon: string;
 }
 
-export const categories: CategoryItem[] = [
+const rawCategories: CategoryItem[] = [
   {
     id: "screen-tools",
     name: "Screen Tools",
@@ -92,7 +92,7 @@ export const categories: CategoryItem[] = [
   }
 ];
 
-export const tools: ToolItem[] = [
+const rawTools: ToolItem[] = [
   // SCREEN TOOLS (10)
   {
     id: "white-screen",
@@ -1140,3 +1140,6 @@ export const tools: ToolItem[] = [
     componentName: "business/RoiCalculator"
   }
 ];
+
+export const categories: CategoryItem[] = rawCategories.filter((c) => c.id !== "ai-tools");
+export const tools: ToolItem[] = rawTools.filter((t) => t.category !== "ai-tools");
