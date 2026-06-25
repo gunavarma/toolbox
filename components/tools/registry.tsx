@@ -41,6 +41,22 @@ export const toolComponents: Record<string, React.ComponentType<any>> = {
     ssr: false,
     loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading BMI Calculator...</div>
   }),
+  "calculators/AgeCalculator": dynamic(() => import("./calculators/AgeCalculator"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Age Calculator...</div>
+  }),
+  "calculators/PercentageCalculator": dynamic(() => import("./calculators/PercentageCalculator"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Percentage Calculator...</div>
+  }),
+  "calculators/GstCalculator": dynamic(() => import("./calculators/GstCalculator"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading GST Calculator...</div>
+  }),
+  "calculators/CompoundInterestCalculator": dynamic(() => import("./calculators/CompoundInterestCalculator"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Compound Interest Calculator...</div>
+  }),
 
   // Text Tools
   "text/WordCounter": dynamic(() => import("./text/WordCounter"), {
@@ -51,6 +67,14 @@ export const toolComponents: Record<string, React.ComponentType<any>> = {
     ssr: false,
     loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Password Generator...</div>
   }),
+  "text/CaseConverter": dynamic(() => import("./text/CaseConverter"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Case Converter...</div>
+  }),
+  "text/CharacterCounter": dynamic(() => import("./text/CharacterCounter"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Character Counter...</div>
+  }),
 
   // Developer Tools
   "developer/JsonFormatter": dynamic(() => import("./developer/JsonFormatter"), {
@@ -60,6 +84,22 @@ export const toolComponents: Record<string, React.ComponentType<any>> = {
   "developer/RegexTester": dynamic(() => import("./developer/RegexTester"), {
     ssr: false,
     loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Regex Tester...</div>
+  }),
+  "developer/Base64Codec": dynamic(() => import("./developer/Base64Codec"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Base64 Codec...</div>
+  }),
+  "developer/UrlCodec": dynamic(() => import("./developer/UrlCodec"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading URL Codec...</div>
+  }),
+  "developer/UuidGenerator": dynamic(() => import("./developer/UuidGenerator"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading UUID Generator...</div>
+  }),
+  "developer/HashGenerator": dynamic(() => import("./developer/HashGenerator"), {
+    ssr: false,
+    loading: () => <div className="py-12 text-center text-sm text-zinc-500 font-mono">Loading Hash Generator...</div>
   }),
 
   // Image Tools
