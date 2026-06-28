@@ -80,6 +80,61 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mobile-First Responsive Design */
+@media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+  
+  /* Ensure proper touch targets on mobile */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  a {
+    min-height: 44px;
+  }
+}
+
+/* Tablet optimization */
+@media (min-width: 640px) and (max-width: 1024px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+/* Desktop optimization */
+@media (min-width: 1024px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Landscape mode optimization */
+@media (max-height: 600px) {
+  header {
+    height: auto;
+    padding: 0.5rem 0;
+  }
+}
+
+/* Prevent zooming on mobile input focus */
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
 /* Custom Scrollbars */
@@ -99,6 +154,12 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
 }
 
 /* Custom Utilities */
@@ -130,7 +191,7 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: var(--shadow-premium);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.8);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
@@ -156,12 +217,33 @@ body {
   }
 }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* Hide Spin Button for numeric inputs */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 input[type=number] {
   -moz-appearance: textfield;
 }
@@ -177,6 +259,7 @@ select {
   background-color: var(--surface) !important;
   border-color: var(--border) !important;
   color: var(--text-primary) !important;
+  font-size: 16px; /* Prevent zoom on iOS */
 }
 
 input[type="text"]::placeholder,
@@ -197,4 +280,59 @@ select:focus {
   border-color: var(--primary) !important;
   --tw-ring-color: var(--primary) !important;
   box-shadow: 0 0 0 1px var(--primary) !important;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .show-mobile {
+    display: none !important;
+  }
+}
+
+/* Ensure proper flex wrapping on mobile */
+.flex-wrap {
+  gap: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .flex-wrap {
+    gap: 0.25rem;
+  }
+}
+
+/* Responsive padding/margin helpers */
+@media (max-width: 640px) {
+  .p-container {
+    padding: 1rem;
+  }
+  
+  .gap-section {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .p-container {
+    padding: 1.5rem;
+  }
+  
+  .gap-section {
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .p-container {
+    padding: 2rem;
+  }
+  
+  .gap-section {
+    gap: 2rem;
+  }
 }

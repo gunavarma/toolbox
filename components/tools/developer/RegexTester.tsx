@@ -118,10 +118,10 @@ export default function RegexTester() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-4 sm:px-0">
       {/* Pattern configuration */}
-      <div className="grid grid-cols-3 gap-4 items-end">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-end">
+        <div className="sm:col-span-2">
           <Input
             label="Regular Expression Pattern"
             value={regexStr}
@@ -143,33 +143,33 @@ export default function RegexTester() {
       </div>
 
       {error && (
-        <div className="p-3.5 bg-red-950/60 border border-red-500/25 rounded-lg flex gap-3 text-xs text-red-300">
-          <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
-          <p className="font-mono leading-relaxed">{error}</p>
+        <div className="p-2.5 sm:p-3.5 bg-red-950/60 border border-red-500/25 rounded-lg flex gap-2 sm:gap-3 text-xs text-red-300">
+          <AlertTriangle className="h-4 sm:h-5 w-4 sm:w-5 text-red-400 shrink-0 mt-0.5" />
+          <p className="font-mono leading-relaxed text-[10px] sm:text-xs break-words">{error}</p>
         </div>
       )}
 
       {/* Split visual tester area */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-4">
         {/* Left Test string area */}
-        <div className="space-y-2.5">
-          <label className="text-xs font-semibold text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
-            <BookOpen className="h-4 w-4 text-violet-400" /> Test String
+        <div className="space-y-2 sm:space-y-2.5">
+          <label className="text-xs font-semibold text-zinc-500 uppercase tracking-widest flex items-center gap-1 sm:gap-1.5">
+            <BookOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-violet-400" /> Test String
           </label>
           <textarea
             value={testText}
             onChange={(e) => setTestText(e.target.value)}
             placeholder="Paste your test text target lines here..."
-            className="w-full h-[200px] font-mono text-xs bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-200 resize-none outline-none"
+            className="w-full h-48 sm:h-[200px] font-mono text-xs bg-zinc-900/40 border border-zinc-800 rounded-lg sm:rounded-xl p-3 sm:p-4 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-200 resize-none outline-none"
           ></textarea>
         </div>
 
         {/* Right Match highlights visualizer area */}
-        <div className="space-y-2.5">
-          <label className="text-xs font-semibold text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
-            <Sparkles className="h-4 w-4 text-emerald-400" /> Highlights Visualizer
+        <div className="space-y-2 sm:space-y-2.5">
+          <label className="text-xs font-semibold text-zinc-500 uppercase tracking-widest flex items-center gap-1 sm:gap-1.5">
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-400" /> Highlights Visualizer
           </label>
-          <div className="w-full h-[200px] font-mono text-xs bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 text-zinc-300 overflow-y-auto whitespace-pre-wrap leading-relaxed select-text scrollbar-custom">
+          <div className="w-full h-48 sm:h-[200px] font-mono text-xs bg-zinc-900/60 border border-zinc-800 rounded-lg sm:rounded-xl p-3 sm:p-4 text-zinc-300 overflow-y-auto whitespace-pre-wrap leading-relaxed select-text scrollbar-custom">
             {getHighlightedText()}
           </div>
         </div>
@@ -177,13 +177,13 @@ export default function RegexTester() {
 
       {/* Matches listing logs */}
       {matches.length > 0 && (
-        <div className="glass rounded-xl border border-zinc-800/80 p-5 space-y-4">
-          <h4 className="text-sm font-bold text-zinc-300">Matched Targets List ({matches.length})</h4>
-          <div className="max-h-[180px] overflow-y-auto divide-y divide-zinc-900/60 scrollbar-custom pr-2 text-xs font-mono">
+        <div className="glass rounded-lg sm:rounded-xl border border-zinc-800/80 p-3 sm:p-5 space-y-3 sm:space-y-4">
+          <h4 className="text-xs sm:text-sm font-bold text-zinc-300">Matched Targets List ({matches.length})</h4>
+          <div className="max-h-40 sm:max-h-[180px] overflow-y-auto divide-y divide-zinc-900/60 scrollbar-custom pr-2 text-xs font-mono">
             {matches.map((match, i) => (
-              <div key={i} className="flex items-center justify-between py-2.5">
+              <div key={i} className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 sm:py-2.5 gap-2 sm:gap-0">
                 <span className="text-zinc-500 font-semibold">Match #{i + 1}</span>
-                <span className="text-zinc-200 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800 font-semibold select-all truncate max-w-xs">{match.text}</span>
+                <span className="text-zinc-200 bg-zinc-900 px-2 py-1 sm:py-0.5 rounded border border-zinc-800 font-semibold select-all truncate max-w-full sm:max-w-xs text-[10px] sm:text-xs">{match.text}</span>
                 <span className="text-zinc-500 text-right">Index: {match.index}</span>
               </div>
             ))}
@@ -192,11 +192,11 @@ export default function RegexTester() {
       )}
 
       {/* Cheat Sheet Helper */}
-      <div className="flex gap-3 p-4 rounded-lg bg-zinc-900/40 border border-zinc-800 text-xs text-zinc-400 select-none">
-        <Info className="h-4.5 w-4.5 text-zinc-500 shrink-0 mt-0.5" />
-        <div className="space-y-1">
-          <h4 className="font-semibold text-zinc-300">Regex Quick Guide Reference:</h4>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1 font-mono text-[10px] text-zinc-500">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg bg-zinc-900/40 border border-zinc-800 text-xs text-zinc-400 select-none">
+        <Info className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-zinc-500 shrink-0 mt-0.5 sm:mt-0" />
+        <div className="space-y-2 sm:space-y-1">
+          <h4 className="font-semibold text-zinc-300 text-xs sm:text-sm">Regex Quick Guide Reference:</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 pt-1 font-mono text-[10px] text-zinc-500">
             <div><span className="text-violet-400 font-semibold">.</span> - Any character</div>
             <div><span className="text-violet-400 font-semibold">\d</span> - Any digit</div>
             <div><span className="text-violet-400 font-semibold">\w</span> - Word character</div>

@@ -97,7 +97,7 @@ export const CommandPalette = () => {
     <AnimatePresence>
       {isCommandPaletteOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh] px-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-[12vh] px-3 sm:px-4 bg-black/60 backdrop-blur-sm"
           onClick={handleBackdropClick}
         >
           <motion.div
@@ -106,11 +106,11 @@ export const CommandPalette = () => {
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             ref={containerRef}
-            className="w-full max-w-2xl bg-zinc-950/90 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden glass"
+            className="w-full max-w-sm sm:max-w-2xl bg-zinc-950/90 border border-zinc-800 rounded-lg sm:rounded-xl shadow-2xl overflow-hidden glass"
           >
             {/* Search Input Box */}
-            <div className="flex items-center border-b border-zinc-800/80 px-4 py-3.5">
-              <Search className="h-5 w-5 text-zinc-500 mr-3 shrink-0" />
+            <div className="flex items-center border-b border-zinc-800/80 px-3 sm:px-4 py-2.5 sm:py-3.5">
+              <Search className="h-4 w-4 sm:h-5 sm:w-5 text-zinc-500 mr-2 sm:mr-3 shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
@@ -120,11 +120,11 @@ export const CommandPalette = () => {
                   setSelectedIndex(0);
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Search tools, calculators, categories..."
-                className="w-full bg-transparent text-zinc-100 placeholder-zinc-500 text-base outline-none border-none focus:ring-0 focus:outline-none"
+                placeholder="Search tools, calculators..."
+                className="w-full bg-transparent text-xs sm:text-base text-zinc-100 placeholder-zinc-500 outline-none border-none focus:ring-0 focus:outline-none"
               />
               <div className="flex items-center gap-1">
-                <span className="text-[10px] font-semibold text-zinc-500 border border-zinc-800 rounded px-1.5 py-0.5 select-none">
+                <span className="text-[9px] sm:text-[10px] font-semibold text-zinc-500 border border-zinc-800 rounded px-1 sm:px-1.5 py-0.5 select-none">
                   ESC
                 </span>
                 <button
@@ -137,34 +137,34 @@ export const CommandPalette = () => {
             </div>
 
             {/* Content Lists */}
-            <div className="max-h-[360px] overflow-y-auto p-2 scrollbar-custom">
+            <div className="max-h-60 sm:max-h-[360px] overflow-y-auto p-1.5 sm:p-2 scrollbar-custom">
               {/* If no search typed, show Recents and Popular */}
               {!query && (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {recentTools.length > 0 && (
                     <div>
-                      <div className="flex items-center text-xs font-semibold text-zinc-500 px-3 py-1.5 uppercase tracking-wider gap-1.5">
+                      <div className="flex items-center text-[10px] sm:text-xs font-semibold text-zinc-500 px-2 sm:px-3 py-1 sm:py-1.5 uppercase tracking-wider gap-1">
                         <Clock className="h-3 w-3" /> Recent Tools
                       </div>
-                      <div className="mt-1 space-y-0.5">
+                      <div className="mt-0.5 sm:mt-1 space-y-0.5">
                         {recentTools.map((tool, index) => (
                           <div
                             key={tool.id}
                             onClick={() => handleSelect(tool)}
                             onMouseEnter={() => setSelectedIndex(index)}
-                            className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-150 ${
+                            className={`flex items-center justify-between px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg cursor-pointer transition-all duration-150 ${
                               index === selectedIndex ? "bg-violet-600/15 text-zinc-50 border-l-2 border-violet-500" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40"
                             }`}
                           >
-                            <div className="flex items-center gap-3">
-                              <Sparkles className="h-4 w-4 text-violet-400 shrink-0" />
-                              <div>
-                                <div className="text-sm font-medium">{tool.name}</div>
-                                <div className="text-xs opacity-60 line-clamp-1">{tool.description}</div>
+                            <div className="flex items-center gap-2 min-w-0">
+                              <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-violet-400 shrink-0" />
+                              <div className="min-w-0">
+                                <div className="text-xs sm:text-sm font-medium truncate">{tool.name}</div>
+                                <div className="text-[10px] sm:text-xs opacity-60 line-clamp-1">{tool.description}</div>
                               </div>
                             </div>
                             {index === selectedIndex && (
-                              <CornerDownLeft className="h-3.5 w-3.5 opacity-60 text-violet-400" />
+                              <CornerDownLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-60 text-violet-400 shrink-0" />
                             )}
                           </div>
                         ))}
@@ -173,10 +173,10 @@ export const CommandPalette = () => {
                   )}
 
                   <div>
-                    <div className="flex items-center text-xs font-semibold text-zinc-500 px-3 py-1.5 uppercase tracking-wider gap-1.5">
+                    <div className="flex items-center text-[10px] sm:text-xs font-semibold text-zinc-500 px-2 sm:px-3 py-1 sm:py-1.5 uppercase tracking-wider gap-1">
                       <Zap className="h-3 w-3" /> Popular Tools
                     </div>
-                    <div className="mt-1 space-y-0.5">
+                    <div className="mt-0.5 sm:mt-1 space-y-0.5">
                       {popularTools.map((tool, index) => {
                         const actualIndex = recentTools.length + index;
                         return (
@@ -184,19 +184,19 @@ export const CommandPalette = () => {
                             key={tool.id}
                             onClick={() => handleSelect(tool)}
                             onMouseEnter={() => setSelectedIndex(actualIndex)}
-                            className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-150 ${
+                            className={`flex items-center justify-between px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg cursor-pointer transition-all duration-150 ${
                               actualIndex === selectedIndex ? "bg-violet-600/15 text-zinc-50 border-l-2 border-violet-500" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40"
                             }`}
                           >
-                            <div className="flex items-center gap-3">
-                              <Terminal className="h-4 w-4 text-zinc-400 shrink-0" />
-                              <div>
-                                <div className="text-sm font-medium">{tool.name}</div>
-                                <div className="text-xs opacity-60 line-clamp-1">{tool.description}</div>
+                            <div className="flex items-center gap-2 min-w-0">
+                              <Terminal className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-zinc-400 shrink-0" />
+                              <div className="min-w-0">
+                                <div className="text-xs sm:text-sm font-medium truncate">{tool.name}</div>
+                                <div className="text-[10px] sm:text-xs opacity-60 line-clamp-1">{tool.description}</div>
                               </div>
                             </div>
                             {actualIndex === selectedIndex && (
-                              <CornerDownLeft className="h-3.5 w-3.5 opacity-60 text-violet-400" />
+                              <CornerDownLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-60 text-violet-400 shrink-0" />
                             )}
                           </div>
                         );
@@ -209,28 +209,28 @@ export const CommandPalette = () => {
               {/* If user typed query, display filtered list */}
               {query && filteredTools.length > 0 && (
                 <div>
-                  <div className="text-xs font-semibold text-zinc-500 px-3 py-1.5 uppercase tracking-wider">
+                  <div className="text-[10px] sm:text-xs font-semibold text-zinc-500 px-2 sm:px-3 py-1 sm:py-1.5 uppercase tracking-wider">
                     Matching Tools ({filteredTools.length})
                   </div>
-                  <div className="mt-1 space-y-0.5">
+                  <div className="mt-0.5 sm:mt-1 space-y-0.5">
                     {filteredTools.map((tool, index) => (
                       <div
                         key={tool.id}
                         onClick={() => handleSelect(tool)}
                         onMouseEnter={() => setSelectedIndex(index)}
-                        className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-150 ${
+                        className={`flex items-center justify-between px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg cursor-pointer transition-all duration-150 ${
                           index === selectedIndex ? "bg-violet-600/15 text-zinc-50 border-l-2 border-violet-500" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <Sparkles className="h-4 w-4 text-violet-400 shrink-0" />
-                          <div>
-                            <div className="text-sm font-medium">{tool.name}</div>
-                            <div className="text-xs opacity-60 line-clamp-1">{tool.description}</div>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-violet-400 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="text-xs sm:text-sm font-medium truncate">{tool.name}</div>
+                            <div className="text-[10px] sm:text-xs opacity-60 line-clamp-1">{tool.description}</div>
                           </div>
                         </div>
                         {index === selectedIndex && (
-                          <CornerDownLeft className="h-3.5 w-3.5 opacity-60 text-violet-400" />
+                          <CornerDownLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-60 text-violet-400 shrink-0" />
                         )}
                       </div>
                     ))}
@@ -240,10 +240,10 @@ export const CommandPalette = () => {
 
               {/* Empty Search Result State */}
               {query && filteredTools.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                  <Terminal className="h-10 w-10 text-zinc-700 mb-3" />
-                  <p className="text-sm text-zinc-400">No tools found matching &ldquo;{query}&rdquo;</p>
-                  <p className="text-xs text-zinc-600 mt-1">Try searching for other terms like &ldquo;json&rdquo;, &ldquo;bmi&rdquo;, or &ldquo;counter&rdquo;</p>
+                <div className="flex flex-col items-center justify-center py-6 sm:py-10 px-4 text-center">
+                  <Terminal className="h-8 w-8 sm:h-10 sm:w-10 text-zinc-700 mb-2 sm:mb-3" />
+                  <p className="text-xs sm:text-sm text-zinc-400">No tools found matching &ldquo;{query}&rdquo;</p>
+                  <p className="text-[10px] sm:text-xs text-zinc-600 mt-1">Try searching for other terms</p>
                 </div>
               )}
             </div>
