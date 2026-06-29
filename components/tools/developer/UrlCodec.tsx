@@ -60,12 +60,12 @@ export default function UrlCodec() {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto py-2">
+    <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto py-2 px-4 sm:px-0">
       {/* Mode Selectors */}
       <div className="flex border-b border-zinc-200 dark:border-zinc-800">
         <button
           onClick={() => handleModeChange("encode")}
-          className={`px-6 py-3 text-sm font-bold border-b-2 transition-all ${
+          className={`px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-bold border-b-2 transition-all ${
             mode === "encode"
               ? "border-primary text-primary"
               : "border-transparent text-zinc-550 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-150"
@@ -75,7 +75,7 @@ export default function UrlCodec() {
         </button>
         <button
           onClick={() => handleModeChange("decode")}
-          className={`px-6 py-3 text-sm font-bold border-b-2 transition-all ${
+          className={`px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-bold border-b-2 transition-all ${
             mode === "decode"
               ? "border-primary text-primary"
               : "border-transparent text-zinc-550 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-150"
@@ -87,9 +87,9 @@ export default function UrlCodec() {
 
       {/* Settings Panel */}
       {mode === "encode" && (
-        <div className="flex flex-wrap items-center gap-6 p-4 bg-surface-container-low/50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800/80">
+        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 sm:gap-6 p-3 sm:p-4 bg-surface-container-low/50 dark:bg-zinc-900/50 rounded-lg sm:rounded-xl border border-zinc-200 dark:border-zinc-800/80">
           <span className="text-xs font-bold text-zinc-500 uppercase tracking-wide">Encoding Scheme:</span>
-          <div className="flex items-center gap-4 text-xs font-semibold text-zinc-700 dark:text-zinc-350">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 text-xs font-semibold text-zinc-700 dark:text-zinc-350">
             <label className="flex items-center gap-2 cursor-pointer select-none">
               <input
                 type="radio"
@@ -101,7 +101,7 @@ export default function UrlCodec() {
                 }}
                 className="text-primary focus:ring-primary/20 h-4 w-4"
               />
-              <span>Standard (encodeURIComponent)</span>
+              <span className="line-clamp-2">Standard (encodeURIComponent)</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer select-none">
               <input
@@ -114,17 +114,17 @@ export default function UrlCodec() {
                 }}
                 className="text-primary focus:ring-primary/20 h-4 w-4"
               />
-              <span>Encode All Characters (Hex %)</span>
+              <span className="line-clamp-2">Encode All Characters (Hex %)</span>
             </label>
           </div>
         </div>
       )}
 
       {/* Split Editors Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Input */}
         <div className="space-y-2">
-          <div className="flex justify-between items-center px-1">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-1 gap-1 sm:gap-0">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wide">
               {mode === "encode" ? "Raw URL / Text string" : "Encoded URL String"}
             </span>
@@ -140,29 +140,30 @@ export default function UrlCodec() {
                 ? "Enter standard web address URL or text string here..."
                 : "Paste percent-encoded URL segments to decode..."
             }
-            className="w-full h-80 px-4 py-3 rounded-2xl border border-zinc-250 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-mono text-zinc-800 dark:text-zinc-100 resize-none"
+            className="w-full h-60 sm:h-80 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-2xl border border-zinc-250 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs sm:text-sm font-mono text-zinc-800 dark:text-zinc-100 resize-none"
           />
         </div>
 
         {/* Output */}
         <div className="space-y-2">
-          <div className="flex justify-between items-center px-1">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-1 gap-2 sm:gap-0">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wide">
               {mode === "encode" ? "Percent Encoded Output" : "Plain Decoded Output"}
             </span>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-zinc-400 font-mono mr-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <span className="text-[10px] text-zinc-400 font-mono">
                 {outputText.length.toLocaleString()} chars
               </span>
               <button
                 onClick={handleCopy}
                 disabled={!outputText}
-                className="flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-zinc-900 border border-zinc-250 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-850 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-[10px] font-bold text-zinc-700 dark:text-zinc-300 shadow-sm active:scale-95 transition-all"
+                className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1 bg-white dark:bg-zinc-900 border border-zinc-250 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-850 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-[9px] sm:text-[10px] font-bold text-zinc-700 dark:text-zinc-300 shadow-sm active:scale-95 transition-all"
               >
-                <span className="material-symbols-outlined text-[14px]">
+                <span className="material-symbols-outlined text-[12px] sm:text-[14px]">
                   {copied ? "check" : "content_copy"}
                 </span>
-                <span>{copied ? "Copied" : "Copy"}</span>
+                <span className="hidden sm:inline">{copied ? "Copied" : "Copy"}</span>
+                <span className="sm:hidden">{copied ? "✓" : "Copy"}</span>
               </button>
             </div>
           </div>
@@ -174,7 +175,7 @@ export default function UrlCodec() {
                 ? "URL encoded format results will appear here instantly..."
                 : "Standard text or URL outputs will appear here..."
             }
-            className="w-full h-80 px-4 py-3 rounded-2xl border border-zinc-250 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 focus:outline-none transition-all text-sm font-mono text-zinc-850 dark:text-zinc-200 resize-none select-all"
+            className="w-full h-60 sm:h-80 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-2xl border border-zinc-250 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 focus:outline-none transition-all text-xs sm:text-sm font-mono text-zinc-850 dark:text-zinc-200 resize-none select-all"
           />
         </div>
       </div>

@@ -1,42 +1,42 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FFFFFF;
-  --surface: #FAFAFA;
-  --card: #FFFFFF;
-  --border: #E5E7EB;
-  --text-primary: #111827;
-  --text-secondary: #6B7280;
-  --text-primary-subtle: #374151;
-  --primary: #2563EB;
-  --primary-light: #3B82F6;
-  --primary-dark: #1D4ED8;
-  --primary-deep: #1E40AF;
+  --background: #ffffff;
+  --surface: #f8fafc;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-primary-subtle: #64748b;
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-deep: #1e3a8a;
   
-  --scrollbar-track: #F9FAFB;
-  --scrollbar-thumb: #E5E7EB;
-  --scrollbar-thumb-hover: #D1D5DB;
+  --scrollbar-track: #f8fafc;
+  --scrollbar-thumb: #e2e8f0;
+  --scrollbar-thumb-hover: #cbd5e1;
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
 .dark {
-  --background: #0A0A0A;
-  --surface: #111111;
-  --card: #18181B;
-  --border: #27272A;
-  --text-primary: #F4F4F5;
-  --text-secondary: #A1A1AA;
-  --text-primary-subtle: #E4E4E7;
-  --primary: #3B82F6;
-  --primary-light: #60A5FA;
-  --primary-dark: #2563EB;
-  --primary-deep: #1D4ED8;
+  --background: #090a0b;
+  --surface: #121316;
+  --card: #16171b;
+  --border: #222326;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-primary-subtle: #64748b;
+  --primary: #3b82f6;
+  --primary-light: #60a5fa;
+  --primary-dark: #2563eb;
+  --primary-deep: #1d4ed8;
 
-  --scrollbar-track: #050507;
-  --scrollbar-thumb: #1E1E24;
-  --scrollbar-thumb-hover: #2D2D39;
+  --scrollbar-track: #090a0b;
+  --scrollbar-thumb: #222326;
+  --scrollbar-thumb-hover: #475569;
 }
 
 @theme {

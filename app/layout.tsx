@@ -1,9 +1,8 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { CommandPalette } from "@/components/layout/CommandPalette";
+import { AppShell } from "@/components/layout/AppShell";
 import { Analytics } from "@vercel/analytics/react";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
@@ -78,6 +77,12 @@ export default function RootLayout({
     >
       <head>
         <meta name="color-scheme" content="light dark" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -96,24 +101,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-bg-primary text-zinc-100 font-sans">
-        {/* Global Floating Header */}
-        <Header />
-
-        {/* Global Command Palette search overlay */}
-        <CommandPalette />
-
-        {/* Layout Shell */}
-        <div className="flex flex-1 relative">
-          {/* Main Content Area */}
-          <main className="flex-1 flex flex-col w-full min-w-0">
-            <div className="flex-1">
-              {children}
-            </div>
-
-            {/* Styled footer */}
-            <Footer />
-          </main>
-        </div>
+        <AppShell>{children}</AppShell>
         <Analytics />
       </body>
       <GoogleAnalytics gaId="G-6J85BLV3GJ" />
